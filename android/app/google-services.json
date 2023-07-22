@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "350418644297",
+    "project_id": "tokmat-5f61c",
+    "storage_bucket": "tokmat-5f61c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350418644297:android:2ae57448a44cca678abe98",
+        "android_client_info": {
+          "package_name": "com.example.tokmat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350418644297-phubjrbdb7jprtdec2d3p49acf71gnu4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1k4HxVXetryduPvFFPgoS44OPETnlTnE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350418644297-phubjrbdb7jprtdec2d3p49acf71gnu4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
