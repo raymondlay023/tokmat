@@ -44,4 +44,11 @@ class AuthCubit extends Cubit<AuthState> {
     await signOutUseCase.call();
     emit(Unauthenticated());
   }
+
+  // Debug
+  @override
+  void onChange(Change<AuthState> change) {
+    print("current: ${change.currentState}" + "\n next: ${change.nextState}");
+    super.onChange(change);
+  }
 }

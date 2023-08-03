@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tokmat/domain/entities/user_entity.dart';
+import 'package:tokmat/core/utils.dart';
 import 'package:tokmat/presentation/cubit/auth_cubit.dart';
 import 'package:tokmat/presentation/cubit/get_user_cubit.dart';
+import 'package:tokmat/presentation/pages/widgets/shimmer_widget.dart';
 
 class SettingsPage extends StatelessWidget {
-  final UserEntity user;
-  const SettingsPage({super.key, required this.user});
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final getUserState = context.watch<GetUserCubit>().state;
+    final currentUser =
+        getUserState is GetUserLoaded ? getUserState.user : null;
+
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: MediaQuery.of(context).size.height / 7,
         actions: [
           Padding(
@@ -32,18 +37,40 @@ class SettingsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Halo, ${user.name}',
-                  style: TextStyle(fontSize: 22),
-                ),
-                Text(
-                  '@${user.username}',
-                  style: TextStyle(fontSize: 16),
-                )
-              ],
+            BlocBuilder<GetUserCubit, GetUserState>(
+              builder: (context, getUserState) {
+                if (getUserState is GetUserLoaded) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Halo, ${getUserState.user.name}',
+                        style: const TextStyle(fontSize: 22),
+                      ),
+                      Text(
+                        '@${getUserState.user.username}',
+                        style: const TextStyle(fontSize: 16),
+                      )
+                    ],
+                  );
+                } else if (getUserState is GetUserLoading) {
+                  Column(
+                    children: [
+                      ShimmerWidget.rectangular(
+                        height: 15,
+                        width: MediaQuery.of(context).size.width / 5,
+                      ),
+                      ShimmerWidget.rectangular(
+                        height: 15,
+                        width: MediaQuery.of(context).size.width / 5,
+                      )
+                    ],
+                  );
+                } else if (getUserState is GetUserFailure) {
+                  toast("Something went wrong!");
+                }
+                return Container();
+              },
             ),
           ],
         ),
@@ -51,11 +78,12 @@ class SettingsPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Divider(height: 1),
-            SizedBox(height: 5),
+            const Divider(height: 1),
+            const SizedBox(height: 5),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(context, '/edit-profile', arguments: user);
+                Navigator.pushNamed(context, '/edit-profile',
+                    arguments: currentUser);
               },
               child: Padding(
                 padding: const EdgeInsets.all(15),
@@ -79,6 +107,7 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
             ),
+            const Divider(height: 1),
             InkWell(
               onTap: () => Navigator.pushNamed(context, '/edit-shop'),
               child: Padding(

@@ -14,14 +14,12 @@ class _RegisterShopPageState extends State<RegisterShopPage> {
   late TextEditingController _nameController;
   late TextEditingController _categoryController;
   late TextEditingController _phoneNumberController;
-  late bool _isRegistering;
 
   @override
   void initState() {
     _nameController = TextEditingController();
     _categoryController = TextEditingController();
     _phoneNumberController = TextEditingController();
-    _isRegistering = false;
     super.initState();
   }
 
@@ -74,36 +72,23 @@ class _RegisterShopPageState extends State<RegisterShopPage> {
                     hintText: 'Masukkan password Anda disini',
                     isPasswordField: true,
                   ),
-                  const SizedBox(height: 42),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Sudah punya akun?'),
-                      Builder(
-                        builder: (context) => TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Masuk disini'),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
               const SizedBox(height: 50),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () => _registerShop(),
-                  child: _isRegistering
-                      ? Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).indicatorColor,
-                          ),
-                        )
-                      : Text('Daftar'),
-                ),
-              ),
+              // SizedBox(
+              //   width: double.infinity,
+              //   child: FilledButton(
+              //     onPressed: () => _registerShop(),
+              //     child: registerShopState
+              //         ? Padding(
+              //             padding: const EdgeInsets.all(8.0),
+              //             child: CircularProgressIndicator(
+              //               color: Theme.of(context).indicatorColor,
+              //             ),
+              //           )
+              //         : Text('Daftar Toko'),
+              //   ),
+              // ),
               const SizedBox(height: 50),
             ],
           ),
@@ -113,9 +98,6 @@ class _RegisterShopPageState extends State<RegisterShopPage> {
   }
 
   void _registerShop() {
-    setState(() {
-      _isRegistering = true;
-    });
     // TODO: Implement register shop
   }
 
@@ -123,8 +105,5 @@ class _RegisterShopPageState extends State<RegisterShopPage> {
     _nameController.clear();
     _categoryController.clear();
     _phoneNumberController.clear();
-    setState(() {
-      _isRegistering = false;
-    });
   }
 }

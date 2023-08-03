@@ -1,20 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
-class TransactionEntity extends Equatable {
+class ProductEntity extends Equatable {
   final String? id;
   final String? shopId;
-  final String? note;
-  final double? total;
-  final String? type;
+  final String? name;
+  final double? price;
+  final int? stock;
+  final double? capital;
   final Timestamp? createdAt;
 
-  const TransactionEntity({
+  const ProductEntity({
     this.id,
     this.shopId,
-    this.note,
-    this.total,
-    this.type,
+    this.name,
+    this.price,
+    this.stock,
+    this.capital,
     this.createdAt,
   });
 
@@ -22,9 +24,10 @@ class TransactionEntity extends Equatable {
   List<Object?> get props => [
         id,
         shopId,
-        note,
-        total,
-        type,
+        name,
+        price,
+        stock,
+        capital,
         createdAt,
       ];
 }

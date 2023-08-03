@@ -52,7 +52,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     height: 150,
                     width: 150,
                     child: ClipOval(
-                      child: profileWidget(
+                      child: profilePhoto(
                           imageUrl: widget.user.profilePhotoUrl, image: _image),
                     ),
                   ),

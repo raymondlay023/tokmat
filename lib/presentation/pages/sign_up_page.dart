@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tokmat/core/const.dart';
 import 'package:tokmat/presentation/pages/widgets/custom_text_form_field.dart';
 
 import '../../core/theme.dart';
 import '../../core/utils.dart';
+import '../../domain/entities/user_entity.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/credential_cubit.dart';
-import 'main_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -45,8 +46,6 @@ class _SignUpPageState extends State<SignUpPage> {
       final credentialState = context.watch<CredentialCubit>().state;
       if (credentialState is CredentialSuccess) {
         context.read<AuthCubit>().loggedIn();
-        final authState = context.watch<AuthCubit>().state;
-        authState is Authenticated ? MainPage(uid: authState.uid) : _bodyWidget;
       } else if (credentialState is CredentialFailure) {
         toast("Invalid email and password!");
       }
@@ -107,7 +106,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       const Text('Sudah punya akun?'),
                       Builder(
                         builder: (context) => TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.pushReplacementNamed(
+                              context, PageConst.signInPage),
                           child: const Text('Masuk disini'),
                         ),
                       ),
@@ -139,11 +139,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _signUpUser() {
-    context.read<CredentialCubit>().signUp(
+    context.read<CredentialCubit>().signUp(UserEntity(
           name: _nameController.text,
           username: _usernameController.text,
           email: _emailController.text,
           password: _passwordController.text,
-        );
+        ));
   }
 }

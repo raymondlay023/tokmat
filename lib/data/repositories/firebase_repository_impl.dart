@@ -1,3 +1,5 @@
+import 'package:tokmat/domain/entities/product_entity.dart';
+import 'package:tokmat/domain/entities/shop_entity.dart';
 import 'package:tokmat/domain/entities/transaction_entity.dart';
 
 import '../datasources/remote_data_source/firebase_remote_data_source.dart';
@@ -36,30 +38,29 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
       await firebaseRemoteDataSource.updateUser(user);
 
   @override
-  Stream<List<UserEntity>> getUser(String uid) =>
-      firebaseRemoteDataSource.getUser(uid);
+  Future<UserEntity> getUser() => firebaseRemoteDataSource.getUser();
 
   @override
-  Future<void> createTransaction(TransactionEntity transaction) {
-    // TODO: implement createTransaction
-    throw UnimplementedError();
-  }
+  Future<void> createTransaction(TransactionEntity transaction) async =>
+      await firebaseRemoteDataSource.createTransaction(transaction);
 
   @override
-  Future<void> deleteTransaction(TransactionEntity transaction) {
-    // TODO: implement deleteTransaction
-    throw UnimplementedError();
-  }
+  Stream<List<TransactionEntity>> getTransactions() =>
+      firebaseRemoteDataSource.getTransactions();
 
   @override
-  Stream<List<TransactionEntity>> getTransactions() {
-    // TODO: implement getTransactions
-    throw UnimplementedError();
-  }
+  Future<void> createShop(ShopEntity shop) async =>
+      await firebaseRemoteDataSource.createShop(shop);
 
   @override
-  Future<void> updateTransaction(TransactionEntity transaction) {
-    // TODO: implement updateTransaction
-    throw UnimplementedError();
-  }
+  Future<ShopEntity> getShop() async =>
+      await firebaseRemoteDataSource.getShop();
+
+  @override
+  Future<void> createProduct(ProductEntity product) async =>
+      await firebaseRemoteDataSource.createProduct(product);
+
+  @override
+  Future<Stream<List<ProductEntity>>> getProducts() async =>
+      await firebaseRemoteDataSource.getProducts();
 }

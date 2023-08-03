@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:tokmat/core/const.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -10,11 +11,12 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  static const Duration DURATION = Duration(seconds: 2);
+  static const Duration duration = Duration(seconds: 2);
 
   @override
   void initState() {
-    Timer(DURATION, () => Navigator.pushReplacementNamed(context, '/sign-in'));
+    Timer(duration,
+        () => Navigator.pushReplacementNamed(context, PageConst.signInPage));
     super.initState();
   }
 

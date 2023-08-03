@@ -17,40 +17,41 @@ class CredentialCubit extends Cubit<CredentialState> {
     required this.signUpUseCase,
   }) : super(CredentialInitial());
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn(UserEntity user) async {
     emit(CredentialLoading());
     try {
-      await signInUseCase.call(UserEntity(email: email, password: password));
+      await signInUseCase.call(UserEntity(
+        email: user.email,
+        password: user.password,
+      ));
       emit(CredentialSuccess());
     } on SocketException catch (_) {
       emit(CredentialFailure());
     }
   }
 
-  Future<void> signUp({
-    required String name,
-    required String username,
-    required String email,
-    required String password,
-    String? profilePhotoUrl,
-  }) async {
+  Future<void> signUp(UserEntity user) async {
     emit(CredentialLoading());
     try {
       await signUpUseCase.call(
         UserEntity(
-          name: name,
-          username: username,
-          email: email,
-          password: password,
-          profilePhotoUrl: profilePhotoUrl ?? "",
+          name: user.name,
+          username: user.username,
+          email: user.email,
+          password: user.password,
+          profilePhotoUrl: user.profilePhotoUrl ?? "",
         ),
       );
       emit(CredentialSuccess());
     } on SocketException catch (_) {
       emit(CredentialFailure());
     }
+  }
+
+  // Debug
+  @override
+  void onChange(Change<CredentialState> change) {
+    print("current: ${change.currentState}" + "\n next: ${change.nextState}");
+    super.onChange(change);
   }
 }

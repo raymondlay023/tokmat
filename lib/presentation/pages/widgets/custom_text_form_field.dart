@@ -5,6 +5,9 @@ class CustomTextFormField extends StatefulWidget {
   final bool isPasswordField;
   final String? hintText;
   final String? labelText;
+  final Function(String)? onChanged;
+  final TextInputType? keyboardType;
+  final Widget? prefixIcon;
 
   const CustomTextFormField({
     super.key,
@@ -12,6 +15,9 @@ class CustomTextFormField extends StatefulWidget {
     this.isPasswordField = false,
     this.hintText,
     this.labelText,
+    this.onChanged,
+    this.keyboardType,
+    this.prefixIcon,
   });
 
   @override
@@ -25,9 +31,12 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   Widget build(BuildContext context) {
     return TextFormField(
       key: widget.key,
+      keyboardType: widget.keyboardType,
       controller: widget.controller,
+      onChanged: widget.onChanged,
       obscureText: widget.isPasswordField ? _obsecureText : false,
       decoration: InputDecoration(
+        prefixIcon: widget.prefixIcon,
         label: Text('${widget.labelText}'),
         hintText: widget.hintText,
         border: const OutlineInputBorder(),

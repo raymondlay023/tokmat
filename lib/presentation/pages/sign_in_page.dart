@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tokmat/domain/entities/user_entity.dart';
 import 'package:tokmat/presentation/pages/widgets/custom_text_form_field.dart';
+import '../../core/const.dart';
 import '../../core/utils.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/credential_cubit.dart';
-import 'main_page.dart';
 import '../../core/theme.dart';
 
 class SignInPage extends StatefulWidget {
@@ -33,13 +34,11 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext buildContext) {
     return Builder(builder: (context) {
       final credentialState = context.watch<CredentialCubit>().state;
       if (credentialState is CredentialSuccess) {
         context.read<AuthCubit>().loggedIn();
-        final authState = context.watch<AuthCubit>().state;
-        authState is Authenticated ? MainPage(uid: authState.uid) : _bodyWidget;
       } else if (credentialState is CredentialFailure) {
         toast("Invalid email and password!");
       }
@@ -88,7 +87,7 @@ class _SignInPageState extends State<SignInPage> {
                       const Text('Belum punya akun?'),
                       TextButton(
                         onPressed: () =>
-                            Navigator.pushNamed(context, '/sign-up'),
+                            Navigator.pushNamed(context, PageConst.signUpPage),
                         child: const Text('Daftar disini'),
                       ),
                     ],
@@ -119,9 +118,9 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _signInUser() {
-    context.read<CredentialCubit>().signIn(
+    context.read<CredentialCubit>().signIn(UserEntity(
           email: _emailController.text,
           password: _passwordController.text,
-        );
+        ));
   }
 }

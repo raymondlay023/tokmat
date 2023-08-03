@@ -9,15 +9,13 @@ class GetUserCubit extends Cubit<GetUserState> {
   final GetUserUseCase getUserUseCase;
   GetUserCubit({required this.getUserUseCase}) : super(GetUserInitial());
 
-  Future<void> getUser({required String uid}) async {
+  Future<void> getUser() async {
     emit(GetUserLoading());
-    print("loading..");
+    print("getUserCubit loading..");
     try {
-      final streamResponse = getUserUseCase.call(uid);
-      print("stream response..");
-      streamResponse.listen((users) {
-        emit(GetUserLoaded(user: users.first));
-      });
+      final user = await getUserUseCase.call();
+      print("user getUserCubit : $user");
+      emit(GetUserLoaded(user: user));
     } catch (_) {
       emit(GetUserFailure());
     }

@@ -1,7 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tokmat/core/const.dart';
+import 'package:tokmat/data/models/product_model.dart';
+import 'package:tokmat/data/models/shop_model.dart';
+import 'package:tokmat/data/models/transaction_model.dart';
 import 'package:tokmat/data/models/user_model.dart';
+import 'package:tokmat/domain/entities/product_entity.dart';
+import 'package:tokmat/domain/entities/shop_entity.dart';
+import 'package:tokmat/domain/entities/transaction_entity.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../core/utils.dart';
 import '../../../domain/entities/user_entity.dart';
@@ -23,6 +30,14 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           email: user.email!, password: user.password!);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
+        case "invalid-email":
+          {
+            toast("Invalid email!");
+          }
+        case "user-disabled":
+          {
+            toast("User is disabled!");
+          }
         case "user-not-found":
           {
             toast("User not found!");
@@ -31,7 +46,6 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           {
             toast("Wrong password!");
           }
-
         default:
           toast("Something went wrong!");
       }
@@ -52,8 +66,15 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
         }
       });
     } on FirebaseAuthException catch (e) {
-      toast(e.message ?? "Something went wrong!");
       switch (e.code) {
+        case ("invalid-email"):
+          {
+            toast("Invalid Email!");
+          }
+        case ("operation-not-allowed"):
+          {
+            toast("Operation not allowed!");
+          }
         case ("weak-password"):
           {
             toast("The password is too weak!");
@@ -72,7 +93,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   Future<void> signOut() async => await firebaseAuth.signOut();
 
   @override
-  Future<bool> isSignIn() async => firebaseAuth.currentUser?.uid != null;
+  Future<bool> isSignIn() async => firebaseAuth.currentUser != null;
 
   @override
   Future<String> getCurrentUid() async => firebaseAuth.currentUser!.uid;
@@ -94,12 +115,13 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
           ? userCollection.doc(uid).update(newUser)
           : userCollection.doc(uid).set(newUser);
     }).catchError((error) {
-      toast("Some error occured!");
+      toast("create user error: $error");
     });
   }
 
   @override
   Future<void> updateUser(UserEntity user) async {
+    final uid = await getCurrentUid();
     final userCollection = firebaseFirestore.collection(FirebaseConst.users);
     final userUpdate = UserModel(
       username: user.username ?? "",
@@ -110,21 +132,117 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
     userUpdate.removeWhere((key, value) => value == null || value == '');
 
-    await userCollection.doc(user.uid).update(userUpdate);
+    await userCollection.doc(uid).update(userUpdate);
   }
 
   @override
-  Stream<List<UserEntity>> getUser(String uid) {
-    final userCollection = firebaseFirestore
+  Future<UserModel> getUser() async {
+    final uid = await getCurrentUid();
+    final querySnapshot = await firebaseFirestore
         .collection(FirebaseConst.users)
         .where("uid", isEqualTo: uid)
-        .limit(1);
-    return userCollection
-        .snapshots()
-        .map((querySnapshot) => querySnapshot.docs.map((doc) {
-              final data = UserModel.fromSnapshot(doc);
-              print("user data : $data");
-              return data;
-            }).toList());
+        .get();
+    return querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).single;
+  }
+
+  @override
+  Future<void> createShop(ShopEntity shop) async {
+    final uid = await getCurrentUid();
+    final shopCollection = firebaseFirestore.collection(FirebaseConst.shops);
+    final newShop = ShopModel(
+      id: shop.id,
+      userId: uid,
+      name: shop.name,
+      category: shop.category,
+      phoneNumber: shop.phoneNumber,
+      createdAt: Timestamp.now(),
+    ).toJson();
+    // shopCollection.add(newShop);
+
+    try {
+      shopCollection.doc(shop.id).set(newShop, SetOptions(merge: true));
+    } catch (e) {
+      print("create shop error : $e");
+    }
+  }
+
+  @override
+  Future<ShopEntity> getShop() async {
+    final uid = await getCurrentUid();
+    final shopCollection = firebaseFirestore.collection(FirebaseConst.shops);
+    final data = await shopCollection.where("user_id", isEqualTo: uid).get();
+    return data.docs.map((e) => ShopModel.fromSnapshot(e)).single;
+  }
+
+  @override
+  Future<void> createTransaction(TransactionEntity transaction) async {
+    final currentShop = await getShop();
+    final transactionCollection =
+        firebaseFirestore.collection(FirebaseConst.transactions);
+    final newTransaction = TransactionModel(
+      id: transaction.id,
+      shopId: currentShop.id,
+      note: transaction.note,
+      total: transaction.total,
+      type: transaction.type,
+      createdAt: Timestamp.now(),
+    ).toJson();
+
+    //* Alternate
+    // transactionCollection.add(newTransaction);
+
+    try {
+      transactionCollection.doc().set(newTransaction, SetOptions(merge: true));
+    } catch (e) {
+      print("create transaction error : $e");
+    }
+  }
+
+  @override
+  Stream<List<TransactionEntity>> getTransactions() {
+    final transactionCollection =
+        firebaseFirestore.collection(FirebaseConst.transactions);
+    final data = transactionCollection.snapshots().map((querySnapshot) =>
+        querySnapshot.docs
+            .map((doc) => TransactionModel.fromSnapshot(doc))
+            .toList());
+    return data;
+  }
+
+  @override
+  Future<void> createProduct(ProductEntity product) async {
+    final currentShop = await getShop();
+    final productCollection =
+        firebaseFirestore.collection(FirebaseConst.products);
+    final newProduct = ProductModel(
+      id: product.id ?? Uuid().v1(),
+      shopId: currentShop.id,
+      name: product.name,
+      price: product.price,
+      capital: product.capital,
+      stock: product.stock,
+      createdAt: Timestamp.now(),
+    ).toJson();
+
+    try {
+      productCollection
+          .doc(Uuid().v1())
+          .set(newProduct, SetOptions(merge: true));
+    } catch (e) {
+      print("create product error : $e");
+    }
+  }
+
+  @override
+  Future<Stream<List<ProductEntity>>> getProducts() async {
+    final currentShop = await getShop();
+    final productCollection =
+        firebaseFirestore.collection(FirebaseConst.products);
+    final data = productCollection
+        .where("shop_id", isEqualTo: currentShop.id)
+        .get()
+        .asStream();
+    return data.map((querySnapshot) =>
+        querySnapshot.docs.map((e) => ProductModel.fromSnapshot(e)).toList());
   }
 }

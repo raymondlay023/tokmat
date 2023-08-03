@@ -4,16 +4,18 @@ import 'package:tokmat/domain/entities/transaction_entity.dart';
 class TransactionModel extends TransactionEntity {
   const TransactionModel({
     final String? id,
-    final String? userId,
+    final String? shopId,
     final String? note,
     final double? total,
     final String? type,
+    final Timestamp? createdAt,
   }) : super(
           id: id,
-          userId: userId,
+          shopId: shopId,
           note: note,
           total: total,
           type: type,
+          createdAt: createdAt,
         );
 
   factory TransactionModel.fromSnapshot(
@@ -21,18 +23,20 @@ class TransactionModel extends TransactionEntity {
     var snapshot = snap.data() as Map<String, dynamic>;
     return TransactionModel(
       id: snapshot['id'],
-      userId: snapshot['userId'],
+      shopId: snapshot['shop_id'],
       note: snapshot['note'],
       total: snapshot['total'],
       type: snapshot['type'],
+      createdAt: snapshot['created_at'],
     );
   }
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "userId": userId,
+        "shop_id": shopId,
         "note": note,
         "total": total,
         "type": type,
+        "created_at": createdAt,
       };
 }

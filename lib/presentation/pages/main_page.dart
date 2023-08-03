@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokmat/presentation/cubit/get_user_cubit.dart';
+import 'package:tokmat/presentation/cubit/shop_cubit.dart';
+import 'no_page_found.dart';
 import 'settings_page.dart';
 import 'transaction_page.dart';
+import 'package:tokmat/injection_container.dart' as di;
 
 import 'home_page.dart';
 
 class MainPage extends StatefulWidget {
-  final String uid;
-  const MainPage({super.key, required this.uid});
+  const MainPage({super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -20,7 +22,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    context.read<GetUserCubit>().getUser(uid: widget.uid);
+    context.read<GetUserCubit>().getUser();
+    context.read<ShopCubit>().getShop();
     _pageController = PageController();
     super.initState();
   }
@@ -43,43 +46,35 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GetUserCubit, GetUserState>(
-      builder: (context, getUserState) {
-        if (getUserState is GetUserLoaded) {
-          final user = getUserState.user;
-          return Scaffold(
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: _selectedIndex,
-              onTap: navigationTapped,
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.assignment),
-                  label: 'Transactions',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.settings),
-                  label: 'Settings',
-                ),
-              ],
-            ),
-            body: PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: _pageController,
-              onPageChanged: _onPageChanged,
-              children: [
-                HomePage(),
-                TransactionPage(),
-                SettingsPage(user: user),
-              ],
-            ),
-          );
-        }
-        return Center(child: CircularProgressIndicator());
-      },
+    return Scaffold(
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: navigationTapped,
+        selectedIndex: _selectedIndex,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.assignment),
+            label: 'Transactions',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
+      body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        children: const [
+          HomePage(),
+          TransactionPage(),
+          SettingsPage(),
+        ],
+      ),
     );
   }
 }
