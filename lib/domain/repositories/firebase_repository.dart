@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../entities/product_entity.dart';
 import '../entities/shop_entity.dart';
 import '../entities/transaction_entity.dart';
@@ -19,8 +21,7 @@ abstract class FirebaseRepository {
   // Shop Features
   Future<ShopEntity> getShop();
   Future<void> createShop(ShopEntity shop);
-  // Future<void> deleteShop(ShopEntity shop);
-  // Future<void> updateShop(ShopEntity shop);
+  Future<void> updateShop(ShopEntity shop);
 
   // Transaction Features
   Stream<List<TransactionEntity>> getTransactions();
@@ -34,6 +35,7 @@ abstract class FirebaseRepository {
   // Future<void> updateProduct(ProductEntity product);
   // Future<void> deleteProduct(ProductEntity product);
 
-  //! Cloud Storage Features
-  // Future<String> uploadImageToStorage(File? file);
+  // Cloud Storage Features
+  Future<String> uploadImageToStorage(
+      File? file, String childName, bool isUserProfile);
 }

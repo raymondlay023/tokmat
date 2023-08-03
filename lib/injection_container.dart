@@ -1,14 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tokmat/data/datasources/remote_data_source/firebase_remote_data_source.dart';
 import 'package:tokmat/domain/usecases/product/create_product_usecase.dart';
 import 'package:tokmat/domain/usecases/product/get_products_use_case.dart';
 import 'package:tokmat/domain/usecases/shop/create_shop_usecase.dart';
 import 'package:tokmat/domain/usecases/shop/get_shop_usecase.dart';
+import 'package:tokmat/domain/usecases/shop/update_shop_usecase.dart';
 import 'package:tokmat/domain/usecases/transactions/create_transaction_usecase.dart';
+import 'package:tokmat/domain/usecases/upload_image_to_storage_usecase.dart';
 import 'package:tokmat/presentation/cubit/cart_cubit.dart';
-import 'package:tokmat/presentation/cubit/get_user_cubit.dart';
+import 'package:tokmat/presentation/cubit/user_cubit.dart';
 import 'package:tokmat/presentation/cubit/product_cubit.dart';
 import 'package:tokmat/presentation/cubit/shop_cubit.dart';
 import 'package:tokmat/presentation/cubit/transaction_cubit.dart';
@@ -45,14 +48,16 @@ Future<void> init() async {
   );
 
   sl.registerFactory(
-    () => GetUserCubit(
+    () => UserCubit(
       getUserUseCase: sl.call(),
+      updateUserUseCase: sl.call(),
     ),
   );
 
   sl.registerFactory(() => ShopCubit(
         createShopUseCase: sl.call(),
         getShopUseCase: sl.call(),
+        updateShopUseCase: sl.call(),
       ));
 
   sl.registerFactory(() => TransactionCubit(
@@ -60,14 +65,14 @@ Future<void> init() async {
         getTransactionsUseCase: sl.call(),
       ));
 
-  sl.registerFactory(() => CartCubit());
-
   sl.registerFactory(() => ProductCubit(
         createProductUseCase: sl.call(),
         getProductsUseCase: sl.call(),
       ));
 
-  // User
+  sl.registerLazySingleton(() => CartCubit());
+
+  // User Use Cases
   sl.registerLazySingleton(() => SignOutUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => GetCurrentUidUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => IsSignInUseCase(repository: sl.call()));
@@ -76,13 +81,24 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CreateUserUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => UpdateUserUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => GetUserUseCase(repository: sl.call()));
+
+  // Transaction Use Cases
   sl.registerLazySingleton(
       () => CreateTransactionUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => GetTransactionsUseCase(repository: sl.call()));
+
+  // Product Use Cases
   sl.registerLazySingleton(() => CreateProductUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => GetProductsUseCase(repository: sl.call()));
+
+  // Shop Use Cases
   sl.registerLazySingleton(() => CreateShopUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => GetShopUseCase(repository: sl.call()));
+  sl.registerLazySingleton(() => UpdateShopUseCase(repository: sl.call()));
+
+  // Upload Image Use Case
+  sl.registerLazySingleton(
+      () => UploadImageToStorageUseCase(repository: sl.call()));
 
   // Repository
   sl.registerLazySingleton<FirebaseRepository>(
@@ -93,12 +109,15 @@ Future<void> init() async {
       () => FirebaseRemoteDataSourceImpl(
             firebaseAuth: sl.call(),
             firebaseFirestore: sl.call(),
+            firebaseStorage: sl.call(),
           ));
 
   // Externals
   final firebaseAuth = FirebaseAuth.instance;
   final firebaseFirestore = FirebaseFirestore.instance;
+  final firebaseStorage = FirebaseStorage.instance;
 
   sl.registerLazySingleton(() => firebaseAuth);
   sl.registerLazySingleton(() => firebaseFirestore);
+  sl.registerLazySingleton(() => firebaseStorage);
 }

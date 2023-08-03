@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:tokmat/core/const.dart';
 import 'package:tokmat/data/models/product_model.dart';
 import 'package:tokmat/data/models/shop_model.dart';
@@ -17,10 +20,12 @@ import 'firebase_remote_data_source.dart';
 class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firebaseFirestore;
+  final FirebaseStorage firebaseStorage;
 
   FirebaseRemoteDataSourceImpl({
     required this.firebaseAuth,
     required this.firebaseFirestore,
+    required this.firebaseStorage,
   });
 
   @override
@@ -124,10 +129,11 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     final uid = await getCurrentUid();
     final userCollection = firebaseFirestore.collection(FirebaseConst.users);
     final userUpdate = UserModel(
-      username: user.username ?? "",
-      email: user.email ?? "",
-      name: user.name ?? "",
-      profilePhotoUrl: user.profilePhotoUrl ?? "",
+      uid: uid,
+      username: user.username,
+      email: user.email,
+      name: user.name,
+      profilePhotoUrl: user.profilePhotoUrl,
     ).toJson();
 
     userUpdate.removeWhere((key, value) => value == null || value == '');
@@ -149,8 +155,9 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   Future<void> createShop(ShopEntity shop) async {
     final uid = await getCurrentUid();
     final shopCollection = firebaseFirestore.collection(FirebaseConst.shops);
+    final newShopId = const Uuid().v1();
     final newShop = ShopModel(
-      id: shop.id,
+      id: newShopId,
       userId: uid,
       name: shop.name,
       category: shop.category,
@@ -160,7 +167,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     // shopCollection.add(newShop);
 
     try {
-      shopCollection.doc(shop.id).set(newShop, SetOptions(merge: true));
+      shopCollection.doc(newShopId).set(newShop, SetOptions(merge: true));
     } catch (e) {
       print("create shop error : $e");
     }
@@ -175,21 +182,34 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   }
 
   @override
+  Future<void> updateShop(ShopEntity shop) async {
+    final shopId = (await getShop()).id;
+    final shopCollection = firebaseFirestore.collection(FirebaseConst.shops);
+
+    final shopUpdate = ShopModel(
+            name: shop.name,
+            category: shop.category,
+            phoneNumber: shop.phoneNumber)
+        .toJson();
+
+    shopUpdate.removeWhere((key, value) => value == null || value == '');
+
+    await shopCollection.doc(shopId).update(shopUpdate);
+  }
+
+  @override
   Future<void> createTransaction(TransactionEntity transaction) async {
     final currentShop = await getShop();
     final transactionCollection =
         firebaseFirestore.collection(FirebaseConst.transactions);
     final newTransaction = TransactionModel(
-      id: transaction.id,
+      id: const Uuid().v1(),
       shopId: currentShop.id,
       note: transaction.note,
       total: transaction.total,
       type: transaction.type,
       createdAt: Timestamp.now(),
     ).toJson();
-
-    //* Alternate
-    // transactionCollection.add(newTransaction);
 
     try {
       transactionCollection.doc().set(newTransaction, SetOptions(merge: true));
@@ -214,8 +234,9 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     final currentShop = await getShop();
     final productCollection =
         firebaseFirestore.collection(FirebaseConst.products);
+    final newProductId = const Uuid().v1();
     final newProduct = ProductModel(
-      id: product.id ?? Uuid().v1(),
+      id: newProductId,
       shopId: currentShop.id,
       name: product.name,
       price: product.price,
@@ -226,7 +247,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
     try {
       productCollection
-          .doc(Uuid().v1())
+          .doc(newProductId)
           .set(newProduct, SetOptions(merge: true));
     } catch (e) {
       print("create product error : $e");
@@ -244,5 +265,25 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
         .asStream();
     return data.map((querySnapshot) =>
         querySnapshot.docs.map((e) => ProductModel.fromSnapshot(e)).toList());
+  }
+
+  @override
+  Future<String> uploadImageToStorage(
+      File? file, String childName, bool isUserProfile) async {
+    Reference ref = firebaseStorage
+        .ref()
+        .child(childName)
+        .child(firebaseAuth.currentUser!.uid);
+
+    if (!isUserProfile) {
+      String id = Uuid().v1();
+      ref = ref.child(id);
+    }
+
+    final uploadTask = ref.putFile(file!);
+    final imageUrl =
+        await uploadTask.then((value) => value.ref.getDownloadURL());
+    print("uploadImageToStorage ImageURL $imageUrl");
+    return imageUrl;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:tokmat/domain/entities/product_entity.dart';
 import 'package:tokmat/domain/entities/shop_entity.dart';
 import 'package:tokmat/domain/entities/transaction_entity.dart';
@@ -57,10 +59,20 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
       await firebaseRemoteDataSource.getShop();
 
   @override
+  Future<void> updateShop(ShopEntity shop) async =>
+      await firebaseRemoteDataSource.updateShop(shop);
+
+  @override
   Future<void> createProduct(ProductEntity product) async =>
       await firebaseRemoteDataSource.createProduct(product);
 
   @override
   Future<Stream<List<ProductEntity>>> getProducts() async =>
       await firebaseRemoteDataSource.getProducts();
+
+  @override
+  Future<String> uploadImageToStorage(
+          File? file, String childName, bool isUserProfile) async =>
+      await firebaseRemoteDataSource.uploadImageToStorage(
+          file, childName, isUserProfile);
 }

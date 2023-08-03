@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tokmat/presentation/cubit/get_user_cubit.dart';
 import 'package:tokmat/presentation/cubit/shop_cubit.dart';
+import 'package:tokmat/presentation/cubit/user_cubit.dart';
 import 'no_page_found.dart';
 import 'settings_page.dart';
 import 'transaction_page.dart';
-import 'package:tokmat/injection_container.dart' as di;
 
 import 'home_page.dart';
 
@@ -22,7 +21,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    context.read<GetUserCubit>().getUser();
+    context.read<UserCubit>().getUser();
     context.read<ShopCubit>().getShop();
     _pageController = PageController();
     super.initState();

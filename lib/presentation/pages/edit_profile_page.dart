@@ -1,11 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tokmat/domain/entities/user_entity.dart';
+import 'package:tokmat/domain/usecases/upload_image_to_storage_usecase.dart';
+import 'package:tokmat/presentation/cubit/user_cubit.dart';
 import 'package:tokmat/presentation/pages/widgets/custom_text_form_field.dart';
-import 'package:tokmat/presentation/pages/widgets/profile_widget.dart';
-
+import 'package:tokmat/presentation/pages/widgets/photo_widget.dart';
+import 'package:tokmat/injection_container.dart' as di;
 import '../../core/utils.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -52,8 +56,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     height: 150,
                     width: 150,
                     child: ClipOval(
-                      child: profilePhoto(
-                          imageUrl: widget.user.profilePhotoUrl, image: _image),
+                      child: photoWidget(
+                        imageUrl: widget.user.profilePhotoUrl,
+                        image: _image,
+                      ),
                     ),
                   ),
                   Positioned(
@@ -65,7 +71,57 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         child: IconButton(
                           splashRadius: 0.1,
                           color: Theme.of(context).primaryIconTheme.color,
-                          onPressed: () => _selectImage(),
+                          onPressed: () => showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return SizedBox(
+                                height: MediaQuery.of(context).size.height / 7,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    SizedBox(
+                                      width:
+                                          MediaQuery.of(context).size.width / 3,
+                                      child: FilledButton(
+                                        onPressed: () {
+                                          _selectImage(ImageSource.camera);
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Icon(Icons.camera_alt),
+                                            Text("Camera"),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width:
+                                          MediaQuery.of(context).size.width / 3,
+                                      child: FilledButton(
+                                        onPressed: () {
+                                          _selectImage(ImageSource.gallery);
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Icon(Icons
+                                                .photo_size_select_actual_rounded),
+                                            Text("Gallery"),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                           icon: const Icon(Icons.edit),
                           iconSize: 25,
                         ),
@@ -88,7 +144,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
-                  onPressed: () {},
+                  onPressed: () => _image == null
+                      ? _updateProfile()
+                      : _updateProfileWithImage(),
                   child: Text('Simpan'),
                 ),
               ),
@@ -97,19 +155,39 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Future _selectImage() async {
+  void _updateProfileWithImage() {
+    di
+        .sl<UploadImageToStorageUseCase>()
+        .call(_image!, "profileImages", true)
+        .then((imageUrl) => _updateProfile(imageUrl: imageUrl));
+  }
+
+  void _updateProfile({String imageUrl = ""}) {
+    di
+        .sl<UserCubit>()
+        .updateUser(UserEntity(
+            username: _usernameController.text,
+            name: _nameController.text,
+            profilePhotoUrl: imageUrl))
+        .then((_) {
+      context.read<UserCubit>().getUser();
+      Navigator.pop(context);
+    });
+  }
+
+  Future _selectImage(ImageSource source) async {
     try {
-      final pickedFile =
-          await ImagePicker.platform.getImage(source: ImageSource.gallery);
-      setState(() {
-        if (pickedFile != null) {
-          _image = File(pickedFile.path);
-        } else {
-          print("No image has been selected");
-        }
-      });
-    } catch (e) {
-      toast("Some error occured $e");
+      final pickedImage = await ImagePicker().pickImage(source: source);
+
+      if (pickedImage != null) {
+        setState(() {
+          _image = File(pickedImage.path);
+        });
+      }
+    } on PlatformException catch (e) {
+      // Debug
+      print("Pick image error: $e");
+      toast("Failed to pick image !");
     }
   }
 }

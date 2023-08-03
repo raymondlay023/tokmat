@@ -12,37 +12,36 @@ class ProductCubit extends Cubit<ProductState> {
   ProductCubit({
     required this.createProductUseCase,
     required this.getProductsUseCase,
-  }) : super(ProductInitial());
+  }) : super(ProductState.initial());
 
   Future<void> getProducts() async {
+    emit(state.copyWith(status: ProductStatus.loading));
     try {
       final streamResponse = await getProductsUseCase.call();
-      streamResponse.listen(
-          (listProduct) => emit(GetProductsSuccess(listProduct: listProduct)));
+      streamResponse.listen((products) {
+        emit(state.copyWith(products: products, status: ProductStatus.success));
+        print("products getProducts : $products");
+      });
     } catch (_) {
-      emit(ProductFailure());
+      emit(state.copyWith(status: ProductStatus.failure));
     }
   }
 
   Future<void> createProduct(ProductEntity product) async {
     try {
+      emit(state.copyWith(status: ProductStatus.loading));
       await createProductUseCase.call(product);
-      emit(AddProductSuccess());
+      emit(state.copyWith(status: ProductStatus.success));
     } catch (_) {
-      emit(AddProductFailure());
+      emit(state.copyWith(status: ProductStatus.failure));
     }
   }
 
   // Debug
   @override
   void onChange(Change<ProductState> change) {
-    print("current: ${change.currentState}" + "\n next: ${change.nextState}");
+    print("current: ${change.currentState.status}" +
+        "\n next: ${change.nextState.status}");
     super.onChange(change);
-  }
-
-  @override
-  void onError(Object error, StackTrace stackTrace) {
-    print("$error, $stackTrace");
-    super.onError(error, stackTrace);
   }
 }

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokmat/domain/entities/product_entity.dart';
 import 'package:tokmat/presentation/cubit/product_cubit.dart';
 import 'package:tokmat/presentation/pages/widgets/custom_text_form_field.dart';
-import 'package:tokmat/injection_container.dart' as di;
 
 class AddProductPage extends StatefulWidget {
   const AddProductPage({super.key});
@@ -79,15 +78,17 @@ class _AddProductPageState extends State<AddProductPage> {
   }
 
   void _addProduct(BuildContext context) {
-    // final productState = context.watch<ProductCubit>().state;
-    // if (productState is AddProductSuccess) {
-    //   Navigator.pop(context);
-    // }
-    context.read<ProductCubit>().createProduct(ProductEntity(
+    context
+        .read<ProductCubit>()
+        .createProduct(ProductEntity(
           name: _namaController.text,
           price: double.tryParse(_hargaController.text),
           capital: double.tryParse(_modalController.text),
           stock: int.tryParse(_stokController.text),
-        ));
+        ))
+        .then((_) {
+      context.read<ProductCubit>().getProducts();
+      Navigator.pop(context);
+    });
   }
 }

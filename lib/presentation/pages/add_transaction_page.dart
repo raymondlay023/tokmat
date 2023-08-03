@@ -37,45 +37,57 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tambah Transaksi"),
+        title: const Text("Tambah Transaksi"),
         toolbarHeight: MediaQuery.of(context).size.width / 5,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: ListView(
           children: [
+            const SizedBox(height: 10),
             OutlinedButton(
-              child: Text('Add product'),
+              child: const Text('Add product'),
               onPressed: () =>
                   Navigator.pushNamed(context, PageConst.productPage),
             ),
+            const SizedBox(height: 10),
             BlocBuilder<CartCubit, CartState>(
               builder: (context, cartState) {
-                if (cartState.status == CartStatus.loaded) {
-                  ListView.builder(
+                if (cartState.status == CartStatus.updated) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: cartState.cartList.length,
                     itemBuilder: (context, index) {
                       final cartItem = cartState.cartList[index];
-                      CartWidget(product: cartItem.product);
+                      print("addTransaction cartList: ${cartState.cartList}");
+                      return CartWidget(cart: cartItem);
                     },
                   );
                 }
                 return Container();
               },
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 10),
             CustomTextFormField(
               controller: _noteController,
-              prefixIcon: Icon(Icons.description),
+              prefixIcon: const Icon(Icons.description),
               labelText: 'Keterangan',
               hintText: 'Masukkan keterangan transaksi',
             ),
             const SizedBox(height: 15),
-            CustomTextFormField(
-              controller: _totalController,
-              prefixIcon: Icon(Icons.attach_money),
-              labelText: 'Total',
-              hintText: 'Masukkan total transaksi',
-              keyboardType: TextInputType.number,
+            BlocListener<CartCubit, CartState>(
+              listener: (context, cartState) {
+                if (cartState.status == CartStatus.updated) {
+                  di.sl<CartCubit>().getTotal();
+                }
+              },
+              child: CustomTextFormField(
+                controller: _totalController,
+                prefixIcon: const Icon(Icons.attach_money),
+                labelText: 'Total',
+                hintText: 'Masukkan total transaksi',
+                keyboardType: TextInputType.number,
+              ),
             ),
             const SizedBox(height: 15),
             DropdownButtonFormField(
@@ -89,12 +101,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   Icons.type_specimen,
                   color: Theme.of(context).primaryColor,
                 ),
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               items: _listType
-                  .map((item) => DropdownMenuItem(
-                        child: Text(item),
-                        value: item,
+                  .map((type) => DropdownMenuItem(
+                        value: type,
+                        child: Text(type),
                       ))
                   .toList(),
               onChanged: (value) => setState(() {
@@ -113,7 +125,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                         total: double.tryParse(_totalController.text),
                       ));
                 },
-                child: Text("Tambah")),
+                child: const Text("Tambah")),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tokmat/domain/entities/shop_entity.dart';
 import 'package:tokmat/presentation/cubit/auth_cubit.dart';
 import 'package:tokmat/presentation/cubit/shop_cubit.dart';
 import 'package:tokmat/presentation/pages/add_product_page.dart';
@@ -23,10 +24,10 @@ class OnGenerateRoute {
 
     switch (settings.name) {
       case "/":
-        return routeBuilder(SplashPage());
+        return routeBuilder(const SplashPage());
 
       case PageConst.mainPage:
-        return routeBuilder(MainPage());
+        return routeBuilder(const MainPage());
 
       case PageConst.signInPage:
         return routeBuilder(
@@ -40,11 +41,11 @@ class OnGenerateRoute {
             return authState is Authenticated
                 ? BlocBuilder<ShopCubit, ShopState>(
                     builder: (context, shopState) {
-                    return shopState is ShopAvailable
-                        ? MainPage()
-                        : AddShopPage();
+                    return shopState.status == ShopStatus.success
+                        ? const MainPage()
+                        : const AddShopPage();
                   })
-                : SignUpPage();
+                : const SignUpPage();
           },
         ));
 
@@ -56,19 +57,20 @@ class OnGenerateRoute {
         }
 
       case PageConst.addProductPage:
-        return routeBuilder(AddProductPage());
+        return routeBuilder(const AddProductPage());
 
       case PageConst.editShopPage:
-        return routeBuilder(EditShopPage());
+        if (args is ShopEntity) {
+          return routeBuilder(EditShopPage(
+            shop: args,
+          ));
+        }
 
       case PageConst.addTransactionPage:
-        return routeBuilder(AddTransactionPage());
+        return routeBuilder(const AddTransactionPage());
 
       case PageConst.productPage:
-        return routeBuilder(ProductPage());
-
-      case PageConst.addProductPage:
-        return routeBuilder(AddProductPage());
+        return routeBuilder(const ProductPage());
 
       default:
         const NoPageFound();

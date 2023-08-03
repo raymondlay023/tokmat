@@ -1,6 +1,6 @@
 part of 'cart_cubit.dart';
 
-enum CartStatus { initial, loading, loaded, error, added, removed, updated }
+enum CartStatus { initial, updated, loading, loaded, failure }
 
 class CartState extends Equatable {
   final List<CartEntity> cartList;
@@ -22,5 +22,5 @@ class CartState extends Equatable {
   }
 
   @override
-  List<Object> get props => [cartList, status];
+  List<Object?> get props => [cartList, status];
 }

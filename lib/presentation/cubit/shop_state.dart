@@ -1,31 +1,20 @@
 part of 'shop_cubit.dart';
 
-abstract class ShopState extends Equatable {
-  const ShopState();
+enum ShopStatus { initial, success, loading, failure }
 
-  @override
-  List<Object> get props => [];
-}
-
-class ShopInitial extends ShopState {}
-
-class ShopLoading extends ShopState {}
-
-class ShopAvailable extends ShopState {}
-
-class ShopUnavailable extends ShopState {}
-
-class AddShopSuccess extends ShopState {}
-
-class AddShopFailure extends ShopState {}
-
-class GetShopSuccess extends ShopState {
+class ShopState extends Equatable {
   final ShopEntity shop;
+  final ShopStatus status;
 
-  const GetShopSuccess({required this.shop});
+  const ShopState({required this.shop, required this.status});
+
+  factory ShopState.initial() =>
+      ShopState(shop: ShopEntity(), status: ShopStatus.initial);
+
+  ShopState copyWith({ShopEntity? shop, ShopStatus? status}) {
+    return ShopState(shop: shop ?? this.shop, status: status ?? this.status);
+  }
 
   @override
-  List<Object> get props => [shop];
+  List<Object> get props => [shop, status];
 }
-
-class GetShopFailure extends ShopState {}

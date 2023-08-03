@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokmat/presentation/cubit/cart_cubit.dart';
-import 'package:tokmat/presentation/cubit/get_user_cubit.dart';
+import 'package:tokmat/presentation/cubit/user_cubit.dart';
 import 'package:tokmat/presentation/cubit/product_cubit.dart';
 import 'package:tokmat/presentation/cubit/shop_cubit.dart';
 import 'package:tokmat/presentation/cubit/transaction_cubit.dart';
@@ -29,11 +29,11 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => di.sl<AuthCubit>()..appStarted(context)),
         BlocProvider(create: (_) => di.sl<CredentialCubit>()),
-        BlocProvider(create: (_) => di.sl<GetUserCubit>()),
+        BlocProvider(create: (_) => di.sl<UserCubit>()),
         BlocProvider(create: (_) => di.sl<TransactionCubit>()),
         BlocProvider(create: (_) => di.sl<CartCubit>()),
         BlocProvider(create: (_) => di.sl<ProductCubit>()),
-        BlocProvider(create: (_) => di.sl<ShopCubit>()..appStarted(context)),
+        BlocProvider(create: (_) => di.sl<ShopCubit>()..getShop()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

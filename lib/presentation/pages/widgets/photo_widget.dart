@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-Widget profilePhoto({String? imageUrl, File? image}) {
+Widget photoWidget({String? imageUrl, File? image}) {
   if (image == null) {
     if (imageUrl == null || imageUrl == "") {
       return Image.asset(
@@ -14,7 +14,7 @@ Widget profilePhoto({String? imageUrl, File? image}) {
         imageUrl: imageUrl,
         fit: BoxFit.cover,
         progressIndicatorBuilder: (context, url, progress) =>
-            CircularProgressIndicator(),
+            const CircularProgressIndicator(),
         errorWidget: (context, url, error) => Image.asset(
           'assets/default-profile-picture.png',
           fit: BoxFit.cover,

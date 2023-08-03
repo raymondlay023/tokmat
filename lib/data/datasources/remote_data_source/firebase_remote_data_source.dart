@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../../../domain/entities/product_entity.dart';
 import '../../../domain/entities/shop_entity.dart';
 import '../../../domain/entities/transaction_entity.dart';
@@ -19,6 +21,7 @@ abstract class FirebaseRemoteDataSource {
   // Shop Features
   Future<ShopEntity> getShop();
   Future<void> createShop(ShopEntity shop);
+  Future<void> updateShop(ShopEntity shop);
 
   // Transaction Features
   Stream<List<TransactionEntity>> getTransactions();
@@ -27,4 +30,8 @@ abstract class FirebaseRemoteDataSource {
   // Product Features
   Future<Stream<List<ProductEntity>>> getProducts();
   Future<void> createProduct(ProductEntity product);
+
+  // Cloud Storage Features
+  Future<String> uploadImageToStorage(
+      File? file, String childName, bool isUserProfile);
 }
