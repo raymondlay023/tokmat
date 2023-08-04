@@ -202,8 +202,9 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     final currentShop = await getShop();
     final transactionCollection =
         firebaseFirestore.collection(FirebaseConst.transactions);
+    final newTransactionId = const Uuid().v1();
     final newTransaction = TransactionModel(
-      id: const Uuid().v1(),
+      id: newTransactionId,
       shopId: currentShop.id,
       note: transaction.note,
       total: transaction.total,
@@ -212,7 +213,9 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     ).toJson();
 
     try {
-      transactionCollection.doc().set(newTransaction, SetOptions(merge: true));
+      transactionCollection
+          .doc(newTransactionId)
+          .set(newTransaction, SetOptions(merge: true));
     } catch (e) {
       print("create transaction error : $e");
     }
@@ -241,6 +244,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       name: product.name,
       price: product.price,
       capital: product.capital,
+      productPhotoUrl: product.productPhotoUrl,
       stock: product.stock,
       createdAt: Timestamp.now(),
     ).toJson();
@@ -252,6 +256,31 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     } catch (e) {
       print("create product error : $e");
     }
+  }
+
+  @override
+  Future<void> updateProduct(ProductEntity product) async {
+    final productCollection =
+        firebaseFirestore.collection(FirebaseConst.products);
+
+    final productUpdate = ProductModel(
+      name: product.name,
+      stock: product.stock,
+      price: product.price,
+      capital: product.capital,
+      productPhotoUrl: product.productPhotoUrl,
+    ).toJson();
+
+    productUpdate.removeWhere((key, value) => value == null || value == '');
+
+    await productCollection.doc(product.id).update(productUpdate);
+  }
+
+  @override
+  Future<void> deleteProduct(String productId) async {
+    final productCollection =
+        firebaseFirestore.collection(FirebaseConst.products);
+    await productCollection.doc(productId).delete();
   }
 
   @override

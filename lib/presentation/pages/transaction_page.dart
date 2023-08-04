@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tokmat/core/const.dart';
 import 'package:tokmat/injection_container.dart' as di;
 import 'package:tokmat/presentation/cubit/transaction_cubit.dart';
 import 'package:tokmat/presentation/pages/widgets/transaction_widget.dart';
@@ -11,7 +12,8 @@ class TransactionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-          onPressed: () => Navigator.pushNamed(context, '/add-transaction'),
+          onPressed: () =>
+              Navigator.pushNamed(context, PageConst.addTransactionPage),
           child: Icon(Icons.add)),
       body: BlocProvider(
         create: (context) => di.sl<TransactionCubit>()..getTransactions(),

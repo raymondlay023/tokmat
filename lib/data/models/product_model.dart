@@ -9,6 +9,7 @@ class ProductModel extends ProductEntity {
     final double? price,
     final int? stock,
     final double? capital,
+    final String? productPhotoUrl,
     final Timestamp? createdAt,
   }) : super(
           id: id,
@@ -17,6 +18,7 @@ class ProductModel extends ProductEntity {
           price: price,
           stock: stock,
           capital: capital,
+          productPhotoUrl: productPhotoUrl,
           createdAt: createdAt,
         );
 
@@ -30,6 +32,7 @@ class ProductModel extends ProductEntity {
       price: snapshot['price'],
       stock: snapshot['stock'],
       capital: snapshot['capital'],
+      productPhotoUrl: snapshot['product_photo_url'],
       createdAt: snapshot['created_at'],
     );
   }
@@ -41,6 +44,7 @@ class ProductModel extends ProductEntity {
         "price": price,
         "stock": stock,
         "capital": capital,
+        "product_photo_url": productPhotoUrl,
         "created_at": createdAt,
       };
 }

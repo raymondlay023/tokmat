@@ -8,17 +8,18 @@ class CustomTextFormField extends StatefulWidget {
   final Function(String)? onChanged;
   final TextInputType? keyboardType;
   final Widget? prefixIcon;
+  final Widget? icon;
 
-  const CustomTextFormField({
-    super.key,
-    this.controller,
-    this.isPasswordField = false,
-    this.hintText,
-    this.labelText,
-    this.onChanged,
-    this.keyboardType,
-    this.prefixIcon,
-  });
+  const CustomTextFormField(
+      {super.key,
+      this.controller,
+      this.isPasswordField = false,
+      this.hintText,
+      this.labelText,
+      this.onChanged,
+      this.keyboardType,
+      this.prefixIcon,
+      this.icon});
 
   @override
   State<CustomTextFormField> createState() => _CustomTextFormFieldState();
@@ -36,6 +37,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       onChanged: widget.onChanged,
       obscureText: widget.isPasswordField ? _obsecureText : false,
       decoration: InputDecoration(
+        icon: widget.icon,
         prefixIcon: widget.prefixIcon,
         label: Text('${widget.labelText}'),
         hintText: widget.hintText,

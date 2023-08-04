@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => di.sl<UserCubit>()),
         BlocProvider(create: (_) => di.sl<TransactionCubit>()),
         BlocProvider(create: (_) => di.sl<CartCubit>()),
-        BlocProvider(create: (_) => di.sl<ProductCubit>()),
+        BlocProvider(create: (_) => di.sl<ProductCubit>()..getProducts()),
         BlocProvider(create: (_) => di.sl<ShopCubit>()..getShop()),
       ],
       child: MaterialApp(

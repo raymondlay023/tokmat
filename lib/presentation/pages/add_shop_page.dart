@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokmat/domain/entities/shop_entity.dart';
 import 'package:tokmat/presentation/cubit/shop_cubit.dart';
 import 'package:tokmat/presentation/pages/widgets/custom_text_form_field.dart';
-import 'package:tokmat/injection_container.dart' as di;
 
 class AddShopPage extends StatefulWidget {
   const AddShopPage({super.key});
@@ -36,7 +35,7 @@ class _AddShopPageState extends State<AddShopPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Tambah toko")),
+      appBar: AppBar(title: const Text("Tambah toko")),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(

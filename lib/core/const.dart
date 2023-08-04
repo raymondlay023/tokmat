@@ -4,10 +4,10 @@ class PageConst {
   static const String mainPage = "/main";
   static const String editProfilePage = "/edit-profile";
   static const String editShopPage = "/edit-shop";
-  static const String registerShop = "/register-shop";
   static const String addTransactionPage = "/add-transaction";
   static const String productPage = "/product";
   static const String addProductPage = "/add-product";
+  static const String editProductPage = "/edit-product";
 }
 
 class FirebaseConst {

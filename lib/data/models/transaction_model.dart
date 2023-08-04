@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tokmat/domain/entities/cart_entity.dart';
 import 'package:tokmat/domain/entities/transaction_entity.dart';
 
 class TransactionModel extends TransactionEntity {
@@ -8,6 +9,7 @@ class TransactionModel extends TransactionEntity {
     final String? note,
     final double? total,
     final String? type,
+    final List<CartEntity>? cartItems,
     final Timestamp? createdAt,
   }) : super(
           id: id,
@@ -15,6 +17,7 @@ class TransactionModel extends TransactionEntity {
           note: note,
           total: total,
           type: type,
+          cartItems: cartItems,
           createdAt: createdAt,
         );
 
@@ -27,6 +30,7 @@ class TransactionModel extends TransactionEntity {
       note: snapshot['note'],
       total: snapshot['total'],
       type: snapshot['type'],
+      cartItems: snap.get("cart_items"),
       createdAt: snapshot['created_at'],
     );
   }

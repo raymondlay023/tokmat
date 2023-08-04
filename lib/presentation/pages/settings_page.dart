@@ -54,6 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     height: 75,
                     child: ClipOval(
                         child: photoWidget(
+                            defaultImage: 'assets/default-profile-picture.png',
                             imageUrl: userState.user.profilePhotoUrl)),
                   ),
                   const SizedBox(width: 20),

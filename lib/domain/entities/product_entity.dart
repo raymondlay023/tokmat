@@ -8,6 +8,7 @@ class ProductEntity extends Equatable {
   final double? price;
   final int? stock;
   final double? capital;
+  final String? productPhotoUrl;
   final Timestamp? createdAt;
 
   const ProductEntity({
@@ -17,6 +18,7 @@ class ProductEntity extends Equatable {
     this.price,
     this.stock,
     this.capital,
+    this.productPhotoUrl,
     this.createdAt,
   });
 
@@ -28,6 +30,7 @@ class ProductEntity extends Equatable {
         price,
         stock,
         capital,
+        productPhotoUrl,
         createdAt,
       ];
 }

@@ -67,6 +67,14 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
       await firebaseRemoteDataSource.createProduct(product);
 
   @override
+  Future<void> updateProduct(ProductEntity product) async =>
+      await firebaseRemoteDataSource.updateProduct(product);
+
+  @override
+  Future<void> deleteProduct(String productId) async =>
+      await firebaseRemoteDataSource.deleteProduct(productId);
+
+  @override
   Future<Stream<List<ProductEntity>>> getProducts() async =>
       await firebaseRemoteDataSource.getProducts();
 

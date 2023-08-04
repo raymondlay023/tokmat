@@ -19,7 +19,7 @@ class ProductPage extends StatelessWidget {
             const Text("Daftar Produk"),
             const Spacer(),
             IconButton(
-              icon: Icon(Icons.search),
+              icon: const Icon(Icons.search),
               onPressed: () {
                 showSearch(context: context, delegate: MySearchDelegate());
               },
@@ -27,24 +27,21 @@ class ProductPage extends StatelessWidget {
           ],
         ),
       ),
-      body: BlocProvider(
-        create: (context) => di.sl<ProductCubit>()..getProducts(),
-        child: BlocBuilder<ProductCubit, ProductState>(
-          builder: (context, productState) {
-            if (productState.status == ProductStatus.success) {
-              return ListView.builder(
-                itemCount: productState.products.length,
-                itemBuilder: (context, index) {
-                  final product = productState.products[index];
-                  return ProductTileWidget(product: product);
-                },
-              );
-            } else if (productState.status == ProductStatus.failure) {
-              toast('Something went wrong!');
-            }
-            return NoProductsYetPage;
-          },
-        ),
+      body: BlocBuilder<ProductCubit, ProductState>(
+        builder: (context, productState) {
+          if (productState.status == ProductStatus.success) {
+            return ListView.builder(
+              itemCount: productState.products.length,
+              itemBuilder: (context, index) {
+                final product = productState.products[index];
+                return ProductTileWidget(product: product);
+              },
+            );
+          } else if (productState.status == ProductStatus.failure) {
+            toast('Something went wrong!');
+          }
+          return NoProductsYetPage;
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, PageConst.addProductPage),

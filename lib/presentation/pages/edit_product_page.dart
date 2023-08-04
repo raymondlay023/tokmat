@@ -5,22 +5,23 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tokmat/domain/entities/product_entity.dart';
-import 'package:tokmat/presentation/cubit/product_cubit.dart';
-import 'package:tokmat/presentation/pages/widgets/custom_text_form_field.dart';
 import 'package:tokmat/injection_container.dart' as di;
 import '../../core/utils.dart';
 import '../../domain/usecases/upload_image_to_storage_usecase.dart';
+import '../cubit/product_cubit.dart';
+import 'widgets/custom_text_form_field.dart';
 import 'widgets/edit_photo_widget.dart';
 import 'widgets/photo_widget.dart';
 
-class AddProductPage extends StatefulWidget {
-  const AddProductPage({super.key});
+class EditProductPage extends StatefulWidget {
+  final ProductEntity product;
+  const EditProductPage({super.key, required this.product});
 
   @override
-  State<AddProductPage> createState() => _AddProductPageState();
+  State<EditProductPage> createState() => _EditProductPageState();
 }
 
-class _AddProductPageState extends State<AddProductPage> {
+class _EditProductPageState extends State<EditProductPage> {
   late TextEditingController _namaController;
   late TextEditingController _stokController;
   late TextEditingController _hargaController;
@@ -29,10 +30,13 @@ class _AddProductPageState extends State<AddProductPage> {
 
   @override
   void initState() {
-    _namaController = TextEditingController();
-    _stokController = TextEditingController();
-    _hargaController = TextEditingController();
-    _modalController = TextEditingController();
+    _namaController = TextEditingController(text: widget.product.name);
+    _stokController =
+        TextEditingController(text: widget.product.stock.toString());
+    _hargaController =
+        TextEditingController(text: widget.product.price.toString());
+    _modalController =
+        TextEditingController(text: widget.product.capital.toString());
     super.initState();
   }
 
@@ -48,7 +52,15 @@ class _AddProductPageState extends State<AddProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Tambah produk baru")),
+      appBar: AppBar(
+        title: const Text("Edit Produk"),
+        actions: [
+          IconButton(
+            onPressed: () => _deleteProduct(),
+            icon: const Icon(Icons.delete),
+          )
+        ],
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 15),
@@ -64,6 +76,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   Navigator.pop(context);
                 },
                 photoWidget: photoWidget(
+                  imageUrl: widget.product.productPhotoUrl,
                   defaultImage: 'assets/default-product-picture.png',
                   selectedImage: _image,
                 ),
@@ -96,9 +109,10 @@ class _AddProductPageState extends State<AddProductPage> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 35),
                 child: FilledButton(
-                    onPressed: () =>
-                        _image == null ? _addProduct() : _addProductWithImage(),
-                    child: const Text("Tambah")),
+                    onPressed: () => _image == null
+                        ? _editProduct()
+                        : _editProductWithImage(),
+                    child: const Text("Edit")),
               )
             ],
           ),
@@ -107,17 +121,26 @@ class _AddProductPageState extends State<AddProductPage> {
     );
   }
 
-  void _addProductWithImage() {
+  void _deleteProduct() {
+    context.read<ProductCubit>().deleteProduct(widget.product.id!).then((_) {
+      context.read<ProductCubit>().getProducts();
+      Navigator.pop(context);
+    });
+  }
+
+  void _editProductWithImage() {
     di
         .sl<UploadImageToStorageUseCase>()
         .call(_image!, "products", true)
-        .then((imageUrl) => _addProduct(imageUrl: imageUrl));
+        .then((imageUrl) => _editProduct(imageUrl: imageUrl));
   }
 
-  void _addProduct({String imageUrl = ""}) {
+  void _editProduct({String imageUrl = ""}) {
+    print("_editProduct id :${widget.product.id}");
     context
         .read<ProductCubit>()
-        .createProduct(ProductEntity(
+        .updateProduct(ProductEntity(
+          id: widget.product.id,
           name: _namaController.text,
           price: double.tryParse(_hargaController.text),
           capital: double.tryParse(_modalController.text),

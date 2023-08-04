@@ -1,17 +1,26 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:tokmat/core/utils.dart';
 import 'package:tokmat/domain/entities/product_entity.dart';
 import 'package:tokmat/domain/usecases/product/create_product_usecase.dart';
 import 'package:tokmat/domain/usecases/product/get_products_use_case.dart';
 
+import '../../domain/usecases/product/delete_product_usecase.dart';
+import '../../domain/usecases/product/update_product_usecase.dart';
+
 part 'product_state.dart';
 
 class ProductCubit extends Cubit<ProductState> {
-  final CreateProductUseCase createProductUseCase;
   final GetProductsUseCase getProductsUseCase;
+  final CreateProductUseCase createProductUseCase;
+  final UpdateProductUseCase updateProductUseCase;
+  final DeleteProductUseCase deleteProductUseCase;
+
   ProductCubit({
-    required this.createProductUseCase,
     required this.getProductsUseCase,
+    required this.createProductUseCase,
+    required this.updateProductUseCase,
+    required this.deleteProductUseCase,
   }) : super(ProductState.initial());
 
   Future<void> getProducts() async {
@@ -32,6 +41,34 @@ class ProductCubit extends Cubit<ProductState> {
       emit(state.copyWith(status: ProductStatus.loading));
       await createProductUseCase.call(product);
       emit(state.copyWith(status: ProductStatus.success));
+    } catch (_) {
+      emit(state.copyWith(status: ProductStatus.failure));
+    }
+  }
+
+  Future<void> updateProduct(ProductEntity product) async {
+    emit(state.copyWith(status: ProductStatus.loading));
+    try {
+      await updateProductUseCase.call(product);
+      emit(state.copyWith(status: ProductStatus.success));
+    } catch (_) {
+      emit(state.copyWith(status: ProductStatus.failure));
+    }
+  }
+
+  Future<void> deleteProduct(String productId) async {
+    emit(state.copyWith(status: ProductStatus.loading));
+    try {
+      print("productId delete cubit $productId");
+      await deleteProductUseCase.call(productId);
+      emit(state.copyWith(status: ProductStatus.success));
+      // if (productId != null && productId != "") {
+      //   await deleteProductUseCase.call(productId);
+      //   emit(state.copyWith(status: ProductStatus.success));
+      // } else {
+      //   emit(state.copyWith(status: ProductStatus.failure));
+      //   toast("id null");
+      // }
     } catch (_) {
       emit(state.copyWith(status: ProductStatus.failure));
     }

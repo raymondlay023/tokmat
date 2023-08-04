@@ -4,7 +4,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tokmat/data/datasources/remote_data_source/firebase_remote_data_source.dart';
 import 'package:tokmat/domain/usecases/product/create_product_usecase.dart';
+import 'package:tokmat/domain/usecases/product/delete_product_usecase.dart';
 import 'package:tokmat/domain/usecases/product/get_products_use_case.dart';
+import 'package:tokmat/domain/usecases/product/update_product_usecase.dart';
 import 'package:tokmat/domain/usecases/shop/create_shop_usecase.dart';
 import 'package:tokmat/domain/usecases/shop/get_shop_usecase.dart';
 import 'package:tokmat/domain/usecases/shop/update_shop_usecase.dart';
@@ -68,6 +70,8 @@ Future<void> init() async {
   sl.registerFactory(() => ProductCubit(
         createProductUseCase: sl.call(),
         getProductsUseCase: sl.call(),
+        updateProductUseCase: sl.call(),
+        deleteProductUseCase: sl.call(),
       ));
 
   sl.registerLazySingleton(() => CartCubit());
@@ -90,6 +94,8 @@ Future<void> init() async {
   // Product Use Cases
   sl.registerLazySingleton(() => CreateProductUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => GetProductsUseCase(repository: sl.call()));
+  sl.registerLazySingleton(() => UpdateProductUseCase(repository: sl.call()));
+  sl.registerLazySingleton(() => DeleteProductUseCase(repository: sl.call()));
 
   // Shop Use Cases
   sl.registerLazySingleton(() => CreateShopUseCase(repository: sl.call()));

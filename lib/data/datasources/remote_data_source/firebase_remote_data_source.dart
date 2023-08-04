@@ -30,6 +30,8 @@ abstract class FirebaseRemoteDataSource {
   // Product Features
   Future<Stream<List<ProductEntity>>> getProducts();
   Future<void> createProduct(ProductEntity product);
+  Future<void> updateProduct(ProductEntity product);
+  Future<void> deleteProduct(String productId);
 
   // Cloud Storage Features
   Future<String> uploadImageToStorage(

@@ -1,14 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:tokmat/domain/entities/shop_entity.dart';
 import 'package:tokmat/injection_container.dart' as di;
 import 'package:tokmat/presentation/cubit/shop_cubit.dart';
 import 'package:tokmat/presentation/pages/widgets/custom_text_form_field.dart';
-import '../../core/utils.dart';
 
 class EditShopPage extends StatefulWidget {
   final ShopEntity shop;
@@ -22,7 +19,6 @@ class _EditShopPageState extends State<EditShopPage> {
   late TextEditingController _nameController;
   late TextEditingController _phoneNumberController;
   late TextEditingController _categoryController;
-  File? _image;
 
   @override
   void initState() {

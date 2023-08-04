@@ -117,7 +117,7 @@ class CartCubit extends Cubit<CartState> {
 
   double getTotal({int? id}) {
     if (id != null) {
-      int index = _getIndexById(id!);
+      int index = _getIndexById(id);
       var cart = _carts[index];
       return cart.quantity * cart.product.price!;
     } else {
