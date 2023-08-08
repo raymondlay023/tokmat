@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokmat/domain/entities/product_entity.dart';
 import 'package:tokmat/domain/entities/shop_entity.dart';
+import 'package:tokmat/domain/entities/transaction_entity.dart';
 import 'package:tokmat/presentation/cubit/auth_cubit.dart';
 import 'package:tokmat/presentation/cubit/shop_cubit.dart';
 import 'package:tokmat/presentation/pages/add_product_page.dart';
 import 'package:tokmat/presentation/pages/add_shop_page.dart';
 import 'package:tokmat/presentation/pages/add_transaction_page.dart';
+import 'package:tokmat/presentation/pages/detail_transaction_page.dart';
 import 'package:tokmat/presentation/pages/edit_product_page.dart';
 import 'package:tokmat/presentation/pages/edit_profile_page.dart';
 import 'package:tokmat/presentation/pages/edit_shop_page.dart';
@@ -78,6 +80,13 @@ class OnGenerateRoute {
         if (args is ProductEntity) {
           return routeBuilder(EditProductPage(
             product: args,
+          ));
+        }
+
+      case PageConst.detailTransactionPage:
+        if (args is TransactionEntity) {
+          return routeBuilder(DetailTransactionPage(
+            transaction: args,
           ));
         }
 

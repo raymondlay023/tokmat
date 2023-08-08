@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:tokmat/domain/entities/cart_entity.dart';
+import 'package:tokmat/domain/entities/product_entity.dart';
 
 class TransactionEntity extends Equatable {
   final String? id;
@@ -8,7 +9,7 @@ class TransactionEntity extends Equatable {
   final String? note;
   final double? total;
   final String? type;
-  final List<CartEntity>? cartItems;
+  final List<ProductEntity>? items;
   final Timestamp? createdAt;
 
   const TransactionEntity({
@@ -17,7 +18,7 @@ class TransactionEntity extends Equatable {
     this.note,
     this.total,
     this.type,
-    this.cartItems,
+    this.items,
     this.createdAt,
   });
 
@@ -28,7 +29,7 @@ class TransactionEntity extends Equatable {
         note,
         total,
         type,
-        cartItems,
+        items,
         createdAt,
       ];
 }

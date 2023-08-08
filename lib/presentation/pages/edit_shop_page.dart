@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokmat/domain/entities/shop_entity.dart';
@@ -67,7 +65,7 @@ class _EditShopPageState extends State<EditShopPage> {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: _updateShopProfile,
-                  child: Text('Simpan'),
+                  child: const Text('Simpan'),
                 ),
               ),
             ],

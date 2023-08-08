@@ -12,36 +12,40 @@ class TransactionCubit extends Cubit<TransactionState> {
   TransactionCubit({
     required this.createTransactionUseCase,
     required this.getTransactionsUseCase,
-  }) : super(TransactionInitial());
+  }) : super(TransactionState.initial());
 
   Future<void> getTransactions() async {
+    emit(state.copyWith(status: TransactionStatus.loading));
     try {
       final streamResponse = getTransactionsUseCase.call();
       streamResponse.listen((transactions) {
-        emit(TransactionLoaded(transactions: transactions));
+        emit(state.copyWith(
+            transactions: transactions, status: TransactionStatus.success));
+        print("get Transaction transactions : $transactions");
       });
     } catch (e) {
-      print(e);
-      emit(TransactionFailure());
+      print("get Transaction error : $e");
+      emit(state.copyWith(status: TransactionStatus.failure));
     }
   }
 
   Future<void> createTransaction(
       {required TransactionEntity transaction}) async {
+    emit(state.copyWith(status: TransactionStatus.loading));
     try {
       await createTransactionUseCase.call(transaction);
+      emit(state.copyWith(status: TransactionStatus.success));
     } catch (e) {
-      print(e);
-      emit(TransactionFailure());
+      print("create Transaction error : $e");
+      emit(state.copyWith(status: TransactionStatus.failure));
     }
   }
 
-  // Future<void> updateTransaction({required TransactionEntity transaction}) {
-  //   try {
-  //     await updateTransactionUseCase.call
-  //   } catch (e) {
-  //     print(e);
-  //     emit(TransactionError());
-  //   }
-  // }
+  // Debug
+  @override
+  void onChange(Change<TransactionState> change) {
+    print("current: ${change.currentState.status}" +
+        "\n next: ${change.nextState.status}");
+    super.onChange(change);
+  }
 }

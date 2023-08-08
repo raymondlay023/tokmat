@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokmat/core/const.dart';
+import 'package:tokmat/domain/entities/cart_entity.dart';
+import 'package:tokmat/domain/entities/product_entity.dart';
 import 'package:tokmat/domain/entities/transaction_entity.dart';
 import 'package:tokmat/presentation/cubit/cart_cubit.dart';
 import 'package:tokmat/presentation/pages/widgets/cart_tile_widget.dart';
 import 'package:tokmat/presentation/pages/widgets/custom_text_form_field.dart';
 import 'package:tokmat/injection_container.dart' as di;
-import 'package:uuid/uuid.dart';
 
+import '../../core/utils.dart';
 import '../cubit/transaction_cubit.dart';
 
 class AddTransactionPage extends StatefulWidget {
@@ -19,18 +21,24 @@ class AddTransactionPage extends StatefulWidget {
 
 class _AddTransactionPageState extends State<AddTransactionPage> {
   final List<String> _listType = ["Pemasukan", "Pengeluaran"];
-  late String _selectedValue;
-  late TextEditingController _idController;
+  late String _selectedType;
+  late List<CartEntity> _carts;
   late TextEditingController _noteController;
   late TextEditingController _totalController;
 
   @override
   void initState() {
-    _selectedValue = _listType[0];
-    _idController = TextEditingController();
+    _selectedType = _listType[0];
     _noteController = TextEditingController();
     _totalController = TextEditingController();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    _totalController.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,6 +62,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             BlocBuilder<CartCubit, CartState>(
               builder: (context, cartState) {
                 if (cartState.status == CartStatus.updated) {
+                  _carts = cartState.cartList;
                   final cartLength = cartState.cartList.length;
                   final height = MediaQuery.of(context).size.height;
                   return SizedBox(
@@ -90,8 +99,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
               builder: (context, cartState) {
                 if (cartState.status == CartStatus.updated) {
                   final total = di.sl<CartCubit>().getTotal();
-                  _totalController =
-                      TextEditingController(text: total.toString());
+                  _totalController.value =
+                      TextEditingValue(text: formatPrice(total));
                 }
                 return CustomTextFormField(
                   controller: _totalController,
@@ -108,10 +117,10 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 Icons.arrow_drop_down_circle,
                 color: Theme.of(context).primaryColor,
               ),
-              value: _selectedValue,
+              value: _selectedType,
               decoration: InputDecoration(
                 prefixIcon: Icon(
-                  Icons.type_specimen,
+                  Icons.category,
                   color: Theme.of(context).primaryColor,
                 ),
                 border: const OutlineInputBorder(),
@@ -123,21 +132,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       ))
                   .toList(),
               onChanged: (value) => setState(() {
-                _selectedValue = value as String;
+                _selectedType = value as String;
               }),
             ),
             const SizedBox(height: 30),
             FilledButton(
-              onPressed: () {
-                di.sl<TransactionCubit>().createTransaction(
-                        transaction: TransactionEntity(
-                      id: _idController.text.isNotEmpty
-                          ? _idController.text
-                          : Uuid().v1(),
-                      note: _noteController.text,
-                      total: double.tryParse(_totalController.text),
-                    ));
-              },
+              onPressed: () => _addTransaction(),
               child: const Text("Tambah"),
             ),
             const SizedBox(height: 15),
@@ -145,5 +145,25 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         ),
       ),
     );
+  }
+
+  void _addTransaction() {
+    List<ProductEntity> products =
+        _carts.map((element) => element.product).toList();
+    print("products from _carts : $products");
+
+    di
+        .sl<TransactionCubit>()
+        .createTransaction(
+          transaction: TransactionEntity(
+              items: products,
+              note: _noteController.text,
+              total: double.tryParse(_totalController.text),
+              type: _selectedType),
+        )
+        .then((_) {
+      context.read<TransactionCubit>().getTransactions();
+      Navigator.pop(context);
+    });
   }
 }

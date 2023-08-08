@@ -8,6 +8,7 @@ class PageConst {
   static const String productPage = "/product";
   static const String addProductPage = "/add-product";
   static const String editProductPage = "/edit-product";
+  static const String detailTransactionPage = "/detail-transaction";
 }
 
 class FirebaseConst {

@@ -1,23 +1,22 @@
 part of 'transaction_cubit.dart';
 
-abstract class TransactionState extends Equatable {
-  const TransactionState();
+enum TransactionStatus { initial, success, loading, failure }
 
-  @override
-  List<Object> get props => [];
-}
-
-class TransactionInitial extends TransactionState {}
-
-class TransactionLoaded extends TransactionState {
+class TransactionState extends Equatable {
   final List<TransactionEntity> transactions;
+  final TransactionStatus status;
+  const TransactionState({required this.transactions, required this.status});
 
-  const TransactionLoaded({required this.transactions});
+  factory TransactionState.initial() => TransactionState(
+      transactions: List.empty(), status: TransactionStatus.initial);
+
+  TransactionState copyWith(
+      {List<TransactionEntity>? transactions, TransactionStatus? status}) {
+    return TransactionState(
+        transactions: transactions ?? this.transactions,
+        status: status ?? this.status);
+  }
 
   @override
-  List<Object> get props => [transactions];
+  List<Object> get props => [transactions, status];
 }
-
-class TransactionLoading extends TransactionState {}
-
-class TransactionFailure extends TransactionState {}

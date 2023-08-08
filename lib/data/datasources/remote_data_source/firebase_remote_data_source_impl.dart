@@ -208,6 +208,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       shopId: currentShop.id,
       note: transaction.note,
       total: transaction.total,
+      items: transaction.items,
       type: transaction.type,
       createdAt: Timestamp.now(),
     ).toJson();

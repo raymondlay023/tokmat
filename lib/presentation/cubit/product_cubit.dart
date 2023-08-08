@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tokmat/core/utils.dart';
 import 'package:tokmat/domain/entities/product_entity.dart';
 import 'package:tokmat/domain/usecases/product/create_product_usecase.dart';
 import 'package:tokmat/domain/usecases/product/get_products_use_case.dart';
@@ -59,16 +58,8 @@ class ProductCubit extends Cubit<ProductState> {
   Future<void> deleteProduct(String productId) async {
     emit(state.copyWith(status: ProductStatus.loading));
     try {
-      print("productId delete cubit $productId");
       await deleteProductUseCase.call(productId);
       emit(state.copyWith(status: ProductStatus.success));
-      // if (productId != null && productId != "") {
-      //   await deleteProductUseCase.call(productId);
-      //   emit(state.copyWith(status: ProductStatus.success));
-      // } else {
-      //   emit(state.copyWith(status: ProductStatus.failure));
-      //   toast("id null");
-      // }
     } catch (_) {
       emit(state.copyWith(status: ProductStatus.failure));
     }

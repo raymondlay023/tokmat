@@ -51,6 +51,8 @@ dependencies:
   uuid: ^3.0.7
   shimmer: ^3.0.0
   intl: ^0.18.1
+  grouped_list: ^5.1.2
+  dotted_line: ^3.2.2
 
 dev_dependencies:
   flutter_test:
