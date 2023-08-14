@@ -10,6 +10,8 @@ import 'package:tokmat/presentation/pages/no_page_found.dart';
 import 'package:tokmat/presentation/pages/widgets/photo_widget.dart';
 import 'package:tokmat/presentation/pages/widgets/shimmer_widget.dart';
 
+import '../../core/const.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -31,7 +33,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Padding(
             padding: const EdgeInsets.only(right: 15),
             child: IconButton(
-              icon: Icon(Icons.exit_to_app_outlined),
+              icon: const Icon(Icons.exit_to_app_outlined),
               onPressed: () => context.read<AuthCubit>().loggedOut(),
             ),
           ),
@@ -54,7 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     height: 75,
                     child: ClipOval(
                         child: photoWidget(
-                            defaultImage: 'assets/default-profile-picture.png',
+                            defaultImage: OtherConst.defaultImagePath,
                             imageUrl: userState.user.profilePhotoUrl)),
                   ),
                   const SizedBox(width: 20),

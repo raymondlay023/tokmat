@@ -11,6 +11,8 @@ import 'package:tokmat/domain/usecases/shop/create_shop_usecase.dart';
 import 'package:tokmat/domain/usecases/shop/get_shop_usecase.dart';
 import 'package:tokmat/domain/usecases/shop/update_shop_usecase.dart';
 import 'package:tokmat/domain/usecases/transactions/create_transaction_usecase.dart';
+import 'package:tokmat/domain/usecases/transactions/delete_transaction_use_case.dart';
+import 'package:tokmat/domain/usecases/transactions/update_transaction_use_case.dart';
 import 'package:tokmat/domain/usecases/upload_image_to_storage_usecase.dart';
 import 'package:tokmat/presentation/cubit/cart_cubit.dart';
 import 'package:tokmat/presentation/cubit/user_cubit.dart';
@@ -65,6 +67,8 @@ Future<void> init() async {
   sl.registerFactory(() => TransactionCubit(
         createTransactionUseCase: sl.call(),
         getTransactionsUseCase: sl.call(),
+        updateTransactionUseCase: sl.call(),
+        deleteTransactionUseCase: sl.call(),
       ));
 
   sl.registerFactory(() => ProductCubit(
@@ -90,6 +94,10 @@ Future<void> init() async {
   sl.registerLazySingleton(
       () => CreateTransactionUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => GetTransactionsUseCase(repository: sl.call()));
+  sl.registerLazySingleton(
+      () => UpdateTransactionUseCase(repository: sl.call()));
+  sl.registerLazySingleton(
+      () => DeleteTransactionUseCase(repository: sl.call()));
 
   // Product Use Cases
   sl.registerLazySingleton(() => CreateProductUseCase(repository: sl.call()));

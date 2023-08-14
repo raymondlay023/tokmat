@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tokmat/core/const.dart';
-import 'package:tokmat/domain/entities/cart_entity.dart';
 import 'package:tokmat/domain/entities/transaction_entity.dart';
-import 'package:tokmat/presentation/cubit/cart_cubit.dart';
-import 'package:tokmat/presentation/pages/widgets/cart_tile_widget.dart';
 import 'package:tokmat/presentation/pages/widgets/custom_text_form_field.dart';
 import 'package:tokmat/injection_container.dart' as di;
-
+import '../../core/const.dart';
+import '../../domain/entities/cart_entity.dart';
+import '../cubit/cart_cubit.dart';
 import '../cubit/transaction_cubit.dart';
+import 'widgets/cart_tile_widget.dart';
 
-class AddTransactionPage extends StatefulWidget {
-  const AddTransactionPage({super.key});
+class EditTransactionPage extends StatefulWidget {
+  final TransactionEntity transaction;
+  const EditTransactionPage({super.key, required this.transaction});
 
   @override
-  State<AddTransactionPage> createState() => _AddTransactionPageState();
+  State<EditTransactionPage> createState() => _EditTransactionPageState();
 }
 
-class _AddTransactionPageState extends State<AddTransactionPage> {
-  final List<String> _listType = [TypeConst.pemasukan, TypeConst.pengeluaran];
+class _EditTransactionPageState extends State<EditTransactionPage> {
+  final List<String> _listType = ["Pemasukan", "Pengeluaran"];
   late String _selectedType;
   late List<CartEntity> _carts;
   late TextEditingController _noteController;
@@ -26,10 +26,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   @override
   void initState() {
-    _selectedType = _listType[0];
-    _noteController = TextEditingController();
-    _totalController = TextEditingController();
-    di.sl<CartCubit>().setCarts(List.empty());
+    _selectedType = widget.transaction.type!.toUpperCase() == "PEMASUKAN"
+        ? _listType[0]
+        : _listType[1];
+    _noteController = TextEditingController(text: widget.transaction.note);
+    _totalController =
+        TextEditingController(text: widget.transaction.total.toString());
+    di.sl<CartCubit>().setCarts(widget.transaction.items!);
     super.initState();
   }
 
@@ -44,8 +47,15 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Tambah Transaksi"),
+        title: const Text("Edit Transaksi"),
         toolbarHeight: MediaQuery.of(context).size.width / 5,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            di.sl<CartCubit>().setCarts(List.empty());
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -53,13 +63,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
           children: [
             const SizedBox(height: 10),
             OutlinedButton(
-              child: const Text('Add product'),
+              child: const Text('Add/Remove product'),
               onPressed: () =>
                   Navigator.pushNamed(context, PageConst.productPage),
-              // onPressed: () => showSearch(
-              //     context: context,
-              //     useRootNavigator: true,
-              //     delegate: ProductSearchDelegate(products: _products)),
             ),
             const SizedBox(height: 10),
             BlocBuilder<CartCubit, CartState>(
@@ -81,7 +87,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       itemCount: cartState.cartList.length,
                       itemBuilder: (context, index) {
                         final cartItem = cartState.cartList[index];
-                        print("addTransaction cartList: ${cartState.cartList}");
+                        print(
+                            "editTransaction cartList: ${cartState.cartList}");
                         return CartTileWidget(cart: cartItem);
                       },
                     ),
@@ -140,8 +147,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             ),
             const SizedBox(height: 30),
             FilledButton(
-              onPressed: () => _addTransaction(),
-              child: const Text("Tambah"),
+              onPressed: () => _editTransaction(),
+              child: const Text("Simpan"),
             ),
             const SizedBox(height: 15),
           ],
@@ -150,11 +157,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     );
   }
 
-  void _addTransaction() {
+  void _editTransaction() {
     di
         .sl<TransactionCubit>()
-        .createTransaction(
+        .updateTransaction(
           transaction: TransactionEntity(
+              id: widget.transaction.id,
               items: _carts,
               note: _noteController.text,
               total: double.tryParse(_totalController.text),
@@ -162,7 +170,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         )
         .then((_) {
       context.read<TransactionCubit>().getTransactions();
-      Navigator.pop(context);
+      di.sl<CartCubit>().setCarts(List.empty());
+      Navigator.popUntil(context, (route) => route.isFirst);
     });
   }
 }

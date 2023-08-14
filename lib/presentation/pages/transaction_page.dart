@@ -8,6 +8,8 @@ import 'package:tokmat/presentation/cubit/transaction_cubit.dart';
 import 'package:tokmat/presentation/pages/widgets/transaction_widget.dart';
 import 'package:tokmat/injection_container.dart' as di;
 
+import '../../core/theme.dart';
+
 class TransactionPage extends StatelessWidget {
   const TransactionPage({super.key});
 
@@ -26,10 +28,15 @@ class TransactionPage extends StatelessWidget {
               // Summary Card
               BlocBuilder<TransactionCubit, TransactionState>(
                 builder: (context, transactionState) {
-                  final successState =
-                      transactionState.status == TransactionStatus.success;
-                  // final profit = di.sl<TransactionCubit>().countProfit();
-                  // final profit = di.sl<TransactionCubit>().countProfit();
+                  final profit = di.sl<TransactionCubit>().total(
+                      transactions: transactionState.transactions,
+                      type: TypeConst.pemasukan);
+                  final loss = di.sl<TransactionCubit>().total(
+                      transactions: transactionState.transactions,
+                      type: TypeConst.pengeluaran);
+                  final profitOrLoss = di.sl<TransactionCubit>().profitOrLoss(
+                      transactions: transactionState.transactions);
+                  final isLoss = profitOrLoss.isNegative;
                   return Card(
                     margin: const EdgeInsets.symmetric(
                         vertical: 15, horizontal: 25),
@@ -42,8 +49,11 @@ class TransactionPage extends StatelessWidget {
                             children: [
                               Column(
                                 children: [
-                                  Text('Total Pemasukan'),
-                                  Text('Rp 1.000.000'),
+                                  const Text('Total Pemasukan'),
+                                  Text(
+                                    formatPrice(profit),
+                                    style: pemasukanStyle,
+                                  ),
                                 ],
                               ),
                               const Spacer(),
@@ -51,16 +61,44 @@ class TransactionPage extends StatelessWidget {
                                   color: Colors.black,
                                   child: const SizedBox(height: 50, width: 1)),
                               const Spacer(),
-                              const Column(
+                              Column(
                                 children: [
-                                  Text('Total Pengeluaran'),
-                                  Text('Rp. 5.000.000'),
+                                  const Text('Total Pengeluaran'),
+                                  Text(
+                                    formatPrice(loss),
+                                    style: pengeluaranStyle,
+                                  ),
                                 ],
                               ),
                             ],
                           ),
                           const SizedBox(height: 20),
-                          Text('Untung Rp. 1.000.000'),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 25, vertical: 10),
+                            decoration: BoxDecoration(
+                                color: isLoss
+                                    ? pengeluaranColor.withOpacity(0.3)
+                                    : pemasukanColor.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(15)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  isLoss ? 'Rugi' : 'Untung',
+                                  style: isLoss
+                                      ? pengeluaranStyle
+                                      : pemasukanStyle,
+                                ),
+                                Text(
+                                  '${isLoss ? profitOrLoss.abs() : profitOrLoss}',
+                                  style: isLoss
+                                      ? pengeluaranStyle
+                                      : pemasukanStyle,
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),

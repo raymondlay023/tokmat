@@ -9,7 +9,7 @@ class TransactionEntity extends Equatable {
   final String? note;
   final double? total;
   final String? type;
-  final List<ProductEntity>? items;
+  final List<CartEntity>? items;
   final Timestamp? createdAt;
 
   const TransactionEntity({

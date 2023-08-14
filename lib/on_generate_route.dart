@@ -12,6 +12,7 @@ import 'package:tokmat/presentation/pages/detail_transaction_page.dart';
 import 'package:tokmat/presentation/pages/edit_product_page.dart';
 import 'package:tokmat/presentation/pages/edit_profile_page.dart';
 import 'package:tokmat/presentation/pages/edit_shop_page.dart';
+import 'package:tokmat/presentation/pages/edit_transaction_page.dart';
 import 'package:tokmat/presentation/pages/main_page.dart';
 import 'package:tokmat/presentation/pages/product_page.dart';
 import 'package:tokmat/presentation/pages/sign_in_page.dart';
@@ -86,6 +87,13 @@ class OnGenerateRoute {
       case PageConst.detailTransactionPage:
         if (args is TransactionEntity) {
           return routeBuilder(DetailTransactionPage(
+            transaction: args,
+          ));
+        }
+
+      case PageConst.editTransactionPage:
+        if (args is TransactionEntity) {
+          return routeBuilder(EditTransactionPage(
             transaction: args,
           ));
         }

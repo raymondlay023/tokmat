@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tokmat/core/const.dart';
 import 'package:tokmat/domain/entities/user_entity.dart';
 import 'package:tokmat/domain/usecases/upload_image_to_storage_usecase.dart';
 import 'package:tokmat/presentation/cubit/user_cubit.dart';
@@ -61,7 +62,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     Navigator.pop(context);
                   },
                   photoWidget: photoWidget(
-                    defaultImage: 'assets/default-profile-picture.png',
+                    defaultImage: OtherConst.defaultImagePath,
                     imageUrl: widget.user.profilePhotoUrl,
                     selectedImage: _image,
                   ),

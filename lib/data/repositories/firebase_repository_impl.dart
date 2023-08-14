@@ -51,6 +51,14 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
       firebaseRemoteDataSource.getTransactions();
 
   @override
+  Future<void> updateTransaction(TransactionEntity transaction) async =>
+      firebaseRemoteDataSource.updateTransaction(transaction);
+
+  @override
+  Future<void> deleteTransaction(String transactionId) async =>
+      await firebaseRemoteDataSource.deleteTransaction(transactionId);
+
+  @override
   Future<void> createShop(ShopEntity shop) async =>
       await firebaseRemoteDataSource.createShop(shop);
 

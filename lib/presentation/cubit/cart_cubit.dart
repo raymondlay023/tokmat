@@ -13,6 +13,17 @@ class CartCubit extends Cubit<CartState> {
 
   List<CartEntity> get cartList => state.cartList;
 
+  void setCarts(List<CartEntity> carts) {
+    emit(state.copyWith(status: CartStatus.loading));
+    print("test initial cart");
+    try {
+      carts.isEmpty ? _carts.clear() : _carts.addAll(carts);
+      emit(state.copyWith(cartList: _carts, status: CartStatus.updated));
+    } catch (_) {
+      emit(state.copyWith(status: CartStatus.failure));
+    }
+  }
+
   void addCart(ProductEntity product) {
     emit(state.copyWith(status: CartStatus.loading));
 

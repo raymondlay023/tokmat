@@ -27,6 +27,7 @@ class _ProductTileWidgetState extends State<ProductTileWidget> {
           PageConst.editProductPage,
           arguments: widget.product,
         ),
+        borderRadius: BorderRadius.circular(12),
         child: Ink(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),

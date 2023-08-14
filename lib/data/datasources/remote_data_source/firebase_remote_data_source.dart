@@ -26,6 +26,8 @@ abstract class FirebaseRemoteDataSource {
   // Transaction Features
   Stream<List<TransactionEntity>> getTransactions();
   Future<void> createTransaction(TransactionEntity transaction);
+  Future<void> updateTransaction(TransactionEntity transaction);
+  Future<void> deleteTransaction(String transactionId);
 
   // Product Features
   Future<Stream<List<ProductEntity>>> getProducts();

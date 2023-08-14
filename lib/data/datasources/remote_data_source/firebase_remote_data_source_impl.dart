@@ -234,6 +234,30 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   }
 
   @override
+  Future<void> updateTransaction(TransactionEntity transaction) async {
+    final transactionCollection =
+        firebaseFirestore.collection(FirebaseConst.transactions);
+
+    final transactionUpdate = TransactionModel(
+      items: transaction.items,
+      note: transaction.note,
+      total: transaction.total,
+      type: transaction.type,
+    ).toJson();
+
+    transactionUpdate.removeWhere((key, value) => value == null || value == '');
+
+    await transactionCollection.doc(transaction.id).update(transactionUpdate);
+  }
+
+  @override
+  Future<void> deleteTransaction(String transactionId) async {
+    final transactionCollection =
+        firebaseFirestore.collection(FirebaseConst.transactions);
+    await transactionCollection.doc(transactionId).delete();
+  }
+
+  @override
   Future<void> createProduct(ProductEntity product) async {
     final currentShop = await getShop();
     final productCollection =
@@ -260,6 +284,19 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   }
 
   @override
+  Future<Stream<List<ProductEntity>>> getProducts() async {
+    final currentShop = await getShop();
+    final productCollection =
+        firebaseFirestore.collection(FirebaseConst.products);
+    final data = productCollection
+        .where("shop_id", isEqualTo: currentShop.id)
+        .get()
+        .asStream();
+    return data.map((querySnapshot) =>
+        querySnapshot.docs.map((e) => ProductModel.fromSnapshot(e)).toList());
+  }
+
+  @override
   Future<void> updateProduct(ProductEntity product) async {
     final productCollection =
         firebaseFirestore.collection(FirebaseConst.products);
@@ -282,19 +319,6 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     final productCollection =
         firebaseFirestore.collection(FirebaseConst.products);
     await productCollection.doc(productId).delete();
-  }
-
-  @override
-  Future<Stream<List<ProductEntity>>> getProducts() async {
-    final currentShop = await getShop();
-    final productCollection =
-        firebaseFirestore.collection(FirebaseConst.products);
-    final data = productCollection
-        .where("shop_id", isEqualTo: currentShop.id)
-        .get()
-        .asStream();
-    return data.map((querySnapshot) =>
-        querySnapshot.docs.map((e) => ProductModel.fromSnapshot(e)).toList());
   }
 
   @override

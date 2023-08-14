@@ -69,6 +69,9 @@ const darkColorScheme = ColorScheme(
   onSurfaceVariant: Color(0xFFD8C2BD),
 );
 
+Color pemasukanColor = const Color(0xff16A813);
+Color pengeluaranColor = const Color(0xffEF6461);
+
 TextStyle logoTextStyle = GoogleFonts.jua(
   color: const Color(0xFFFF4A21),
   fontSize: 44,
@@ -79,3 +82,9 @@ TextStyle headerTextStyle = GoogleFonts.roboto(
   fontSize: 24,
   fontWeight: FontWeight.bold,
 );
+
+TextStyle pemasukanStyle =
+    GoogleFonts.roboto(color: pemasukanColor, fontWeight: FontWeight.bold);
+
+TextStyle pengeluaranStyle =
+    GoogleFonts.roboto(color: pengeluaranColor, fontWeight: FontWeight.bold);

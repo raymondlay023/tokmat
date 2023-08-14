@@ -1,17 +1,25 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:tokmat/core/const.dart';
 import 'package:tokmat/domain/entities/transaction_entity.dart';
+import 'package:tokmat/domain/usecases/transactions/delete_transaction_use_case.dart';
 import 'package:tokmat/domain/usecases/transactions/get_transactions_usecase.dart';
 import 'package:tokmat/domain/usecases/transactions/create_transaction_usecase.dart';
+import 'package:tokmat/domain/usecases/transactions/update_transaction_use_case.dart';
 
 part 'transaction_state.dart';
 
 class TransactionCubit extends Cubit<TransactionState> {
   final CreateTransactionUseCase createTransactionUseCase;
   final GetTransactionsUseCase getTransactionsUseCase;
+  final UpdateTransactionUseCase updateTransactionUseCase;
+  final DeleteTransactionUseCase deleteTransactionUseCase;
+
   TransactionCubit({
     required this.createTransactionUseCase,
     required this.getTransactionsUseCase,
+    required this.updateTransactionUseCase,
+    required this.deleteTransactionUseCase,
   }) : super(TransactionState.initial());
 
   Future<void> getTransactions() async {
@@ -24,7 +32,6 @@ class TransactionCubit extends Cubit<TransactionState> {
         print("get Transaction transactions : $transactions");
       });
     } catch (e) {
-      print("get Transaction error : $e");
       emit(state.copyWith(status: TransactionStatus.failure));
     }
   }
@@ -36,9 +43,58 @@ class TransactionCubit extends Cubit<TransactionState> {
       await createTransactionUseCase.call(transaction);
       emit(state.copyWith(status: TransactionStatus.success));
     } catch (e) {
-      print("create Transaction error : $e");
       emit(state.copyWith(status: TransactionStatus.failure));
     }
+  }
+
+  Future<void> updateTransaction(
+      {required TransactionEntity transaction}) async {
+    emit(state.copyWith(status: TransactionStatus.loading));
+    try {
+      await updateTransactionUseCase.call(transaction);
+      emit(state.copyWith(status: TransactionStatus.success));
+    } catch (_) {
+      emit(state.copyWith(status: TransactionStatus.failure));
+    }
+  }
+
+  Future<void> deleteTransaction({required String transactionId}) async {
+    emit(state.copyWith(status: TransactionStatus.loading));
+    try {
+      await deleteTransactionUseCase.call(transactionId);
+      emit(state.copyWith(status: TransactionStatus.success));
+    } catch (_) {
+      emit(state.copyWith(status: TransactionStatus.failure));
+    }
+  }
+
+  double total({required List<TransactionEntity> transactions, required type}) {
+    double total = 0;
+    for (var transaction
+        in transactions.where((transaction) => transaction.type == type)) {
+      total += transaction.total!;
+    }
+    return total;
+  }
+
+  double profitOrLoss({required List<TransactionEntity> transactions}) {
+    double result = 0;
+    for (var transaction in transactions) {
+      if (transaction.type == TypeConst.pemasukan) {
+        result += transaction.total!;
+      } else {
+        result -= transaction.total!;
+      }
+    }
+    return result;
+  }
+
+  List<TransactionEntity> filteredTransaction({required String query}) {
+    return state.transactions.where((transaction) {
+      final noteLower = transaction.note!.toLowerCase();
+      final searchLower = query.toLowerCase();
+      return noteLower.contains(searchLower);
+    }).toList();
   }
 
   // Debug
