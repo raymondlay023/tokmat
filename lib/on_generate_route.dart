@@ -18,6 +18,7 @@ import 'package:tokmat/presentation/pages/product_page.dart';
 import 'package:tokmat/presentation/pages/sign_in_page.dart';
 import 'package:tokmat/presentation/pages/sign_up_page.dart';
 import 'package:tokmat/presentation/pages/splash_page.dart';
+import 'package:tokmat/presentation/pages/transaction_report_page.dart';
 
 import 'core/const.dart';
 import 'domain/entities/user_entity.dart';
@@ -79,28 +80,28 @@ class OnGenerateRoute {
 
       case PageConst.editProductPage:
         if (args is ProductEntity) {
-          return routeBuilder(EditProductPage(
-            product: args,
-          ));
+          return routeBuilder(EditProductPage(product: args));
         }
 
       case PageConst.detailTransactionPage:
         if (args is TransactionEntity) {
-          return routeBuilder(DetailTransactionPage(
-            transaction: args,
-          ));
+          return routeBuilder(DetailTransactionPage(transaction: args));
         }
 
       case PageConst.editTransactionPage:
         if (args is TransactionEntity) {
-          return routeBuilder(EditTransactionPage(
-            transaction: args,
-          ));
+          return routeBuilder(EditTransactionPage(transaction: args));
+        }
+
+      case PageConst.transactionReportPage:
+        if (args is List<TransactionEntity>) {
+          return routeBuilder(TransactionReportPage(transactions: args));
         }
 
       default:
         const NoPageFound();
     }
+    return null;
   }
 }
 

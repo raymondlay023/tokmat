@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tokmat/core/const.dart';
+import 'package:tokmat/core/theme.dart';
 import 'package:tokmat/core/utils.dart';
 import 'package:tokmat/domain/entities/transaction_entity.dart';
 
@@ -10,8 +11,8 @@ class TransactionTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-      child: Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      child: SizedBox(
         child: InkWell(
           onTap: () => Navigator.pushNamed(
             context,
@@ -26,14 +27,22 @@ class TransactionTileWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Flexible(
-                    flex: 2,
+                    flex: 3,
                     child: Text(
                       transaction.note ?? "-",
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  const Flexible(flex: 1, child: SizedBox()),
                   Flexible(
-                      flex: 1, child: Text(formatPrice(transaction.total))),
+                      flex: 2,
+                      child: Text(
+                        formatCurrency(transaction.total),
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            color: transaction.type == TypeConst.pemasukan
+                                ? pemasukanColor
+                                : pengeluaranColor),
+                      )),
                 ],
               ),
             ),

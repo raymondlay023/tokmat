@@ -29,8 +29,8 @@ class CartTileWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(cart.product.name!),
-                      Text(
-                          formatPrice(di.sl<CartCubit>().getTotal(id: cart.id)))
+                      Text(formatCurrency(
+                          di.sl<CartCubit>().getTotal(id: cart.id)))
                     ],
                   ),
                   const Spacer(
@@ -38,7 +38,7 @@ class CartTileWidget extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () => di.sl<CartCubit>().reduceQuantity(cart.id),
-                    icon: Icon(Icons.remove_circle_outline),
+                    icon: const Icon(Icons.remove_circle_outline),
                   ),
                   Text("${cart.quantity}"),
                   IconButton(

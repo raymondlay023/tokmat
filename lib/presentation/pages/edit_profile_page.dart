@@ -62,7 +62,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     Navigator.pop(context);
                   },
                   photoWidget: photoWidget(
-                    defaultImage: OtherConst.defaultImagePath,
+                    defaultImage: OtherConst.defaultProfileImagePath,
                     imageUrl: widget.user.profilePhotoUrl,
                     selectedImage: _image,
                   ),

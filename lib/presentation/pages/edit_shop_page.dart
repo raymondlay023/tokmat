@@ -41,35 +41,37 @@ class _EditShopPageState extends State<EditShopPage> {
       appBar: AppBar(
         title: const Text("Edit Profil toko"),
       ),
-      body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 35),
-          child: Column(
-            children: [
-              const SizedBox(height: 25),
-              CustomTextFormField(
-                controller: _nameController,
-                labelText: "Nama toko",
-              ),
-              const SizedBox(height: 15),
-              CustomTextFormField(
-                controller: _phoneNumberController,
-                labelText: "Nomor Telepon",
-              ),
-              const SizedBox(height: 15),
-              CustomTextFormField(
-                controller: _categoryController,
-                labelText: "Kategori toko",
-              ),
-              const SizedBox(height: 15),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: _updateShopProfile,
-                  child: const Text('Simpan'),
+      body: SingleChildScrollView(
+        child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 35),
+            child: Column(
+              children: [
+                const SizedBox(height: 25),
+                CustomTextFormField(
+                  controller: _nameController,
+                  labelText: "Nama toko",
                 ),
-              ),
-            ],
-          )),
+                const SizedBox(height: 15),
+                CustomTextFormField(
+                  controller: _phoneNumberController,
+                  labelText: "Nomor Telepon",
+                ),
+                const SizedBox(height: 15),
+                CustomTextFormField(
+                  controller: _categoryController,
+                  labelText: "Kategori toko",
+                ),
+                const SizedBox(height: 15),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _updateShopProfile,
+                    child: const Text('Simpan'),
+                  ),
+                ),
+              ],
+            )),
+      ),
     );
   }
 

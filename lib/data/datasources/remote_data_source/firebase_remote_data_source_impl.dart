@@ -164,7 +164,6 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       phoneNumber: shop.phoneNumber,
       createdAt: Timestamp.now(),
     ).toJson();
-    // shopCollection.add(newShop);
 
     try {
       shopCollection.doc(newShopId).set(newShop, SetOptions(merge: true));
@@ -210,7 +209,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       total: transaction.total,
       items: transaction.items,
       type: transaction.type,
-      createdAt: Timestamp.now(),
+      createdAt: transaction.createdAt,
     ).toJson();
 
     try {

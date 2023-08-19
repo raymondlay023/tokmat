@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class MySearchDelegate<T> extends SearchDelegate {
+class CustomSearchDelegate<T> extends SearchDelegate {
   final List<T> items;
   final String Function(T) itemToString;
 
-  MySearchDelegate({
+  CustomSearchDelegate({
     required this.items,
     required this.itemToString,
   });

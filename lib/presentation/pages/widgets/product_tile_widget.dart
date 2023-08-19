@@ -52,7 +52,7 @@ class _ProductTileWidgetState extends State<ProductTileWidget> {
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(width: 10),
-                    Text(formatPrice(widget.product.price)),
+                    Text(formatCurrency(widget.product.price)),
                     const SizedBox(width: 10),
                     Text("${widget.product.stock} items"),
                     const SizedBox(width: 10),

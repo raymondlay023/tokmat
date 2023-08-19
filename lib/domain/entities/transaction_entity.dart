@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:tokmat/domain/entities/cart_entity.dart';
-import 'package:tokmat/domain/entities/product_entity.dart';
 
 class TransactionEntity extends Equatable {
   final String? id;

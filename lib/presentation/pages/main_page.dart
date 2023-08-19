@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokmat/presentation/cubit/shop_cubit.dart';
 import 'package:tokmat/presentation/cubit/user_cubit.dart';
-import 'no_page_found.dart';
 import 'settings_page.dart';
 import 'transaction_page.dart';
 
@@ -52,15 +51,15 @@ class _MainPageState extends State<MainPage> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Beranda',
           ),
           NavigationDestination(
             icon: Icon(Icons.assignment),
-            label: 'Transactions',
+            label: 'Transaksi',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            label: 'Pengaturan',
           ),
         ],
       ),

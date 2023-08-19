@@ -56,7 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     height: 75,
                     child: ClipOval(
                         child: photoWidget(
-                            defaultImage: OtherConst.defaultImagePath,
+                            defaultImage: OtherConst.defaultProfileImagePath,
                             imageUrl: userState.user.profilePhotoUrl)),
                   ),
                   const SizedBox(width: 20),

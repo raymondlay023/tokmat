@@ -10,6 +10,7 @@ class PageConst {
   static const String editProductPage = "/edit-product";
   static const String detailTransactionPage = "/detail-transaction";
   static const String editTransactionPage = "/edit-transaction";
+  static const String transactionReportPage = "/transaction-report";
 }
 
 class TypeConst {
@@ -18,7 +19,10 @@ class TypeConst {
 }
 
 class OtherConst {
-  static const String defaultImagePath = 'assets/default-profile-picture.png';
+  static const String defaultProfileImagePath =
+      'assets/default-profile-picture.png';
+  static const String defaultProductImagePath =
+      'assets/default-profile-picture.png';
 }
 
 class FirebaseConst {

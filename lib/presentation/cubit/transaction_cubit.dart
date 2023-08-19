@@ -6,7 +6,7 @@ import 'package:tokmat/domain/usecases/transactions/delete_transaction_use_case.
 import 'package:tokmat/domain/usecases/transactions/get_transactions_usecase.dart';
 import 'package:tokmat/domain/usecases/transactions/create_transaction_usecase.dart';
 import 'package:tokmat/domain/usecases/transactions/update_transaction_use_case.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 part 'transaction_state.dart';
 
 class TransactionCubit extends Cubit<TransactionState> {
@@ -68,33 +68,21 @@ class TransactionCubit extends Cubit<TransactionState> {
     }
   }
 
-  double total({required List<TransactionEntity> transactions, required type}) {
-    double total = 0;
-    for (var transaction
-        in transactions.where((transaction) => transaction.type == type)) {
-      total += transaction.total!;
+  void filterTransactionByQuery(
+      {required List<TransactionEntity> transactions, required String query}) {
+    emit(state.copyWith(status: TransactionStatus.loading));
+    try {
+      final filteredTransactions = transactions.where((transaction) {
+        final noteLower = transaction.note!.toLowerCase();
+        final searchLower = query.toLowerCase();
+        return noteLower.contains(searchLower);
+      }).toList();
+      emit(state.copyWith(
+          transactions: filteredTransactions,
+          status: TransactionStatus.success));
+    } catch (_) {
+      emit(state.copyWith(status: TransactionStatus.failure));
     }
-    return total;
-  }
-
-  double profitOrLoss({required List<TransactionEntity> transactions}) {
-    double result = 0;
-    for (var transaction in transactions) {
-      if (transaction.type == TypeConst.pemasukan) {
-        result += transaction.total!;
-      } else {
-        result -= transaction.total!;
-      }
-    }
-    return result;
-  }
-
-  List<TransactionEntity> filteredTransaction({required String query}) {
-    return state.transactions.where((transaction) {
-      final noteLower = transaction.note!.toLowerCase();
-      final searchLower = query.toLowerCase();
-      return noteLower.contains(searchLower);
-    }).toList();
   }
 
   // Debug

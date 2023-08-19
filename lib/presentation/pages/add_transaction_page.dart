@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokmat/core/const.dart';
+import 'package:tokmat/core/utils.dart';
 import 'package:tokmat/domain/entities/cart_entity.dart';
 import 'package:tokmat/domain/entities/transaction_entity.dart';
 import 'package:tokmat/presentation/cubit/cart_cubit.dart';
@@ -20,6 +22,7 @@ class AddTransactionPage extends StatefulWidget {
 class _AddTransactionPageState extends State<AddTransactionPage> {
   final List<String> _listType = [TypeConst.pemasukan, TypeConst.pengeluaran];
   late String _selectedType;
+  late DateTime _date;
   late List<CartEntity> _carts;
   late TextEditingController _noteController;
   late TextEditingController _totalController;
@@ -27,6 +30,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   @override
   void initState() {
     _selectedType = _listType[0];
+    _date = DateUtils.dateOnly(DateTime.now());
     _noteController = TextEditingController();
     _totalController = TextEditingController();
     di.sl<CartCubit>().setCarts(List.empty());
@@ -53,13 +57,38 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
           children: [
             const SizedBox(height: 10),
             OutlinedButton(
-              child: const Text('Add product'),
+              child: const Text('Tambah produk'),
               onPressed: () =>
                   Navigator.pushNamed(context, PageConst.productPage),
-              // onPressed: () => showSearch(
-              //     context: context,
-              //     useRootNavigator: true,
-              //     delegate: ProductSearchDelegate(products: _products)),
+            ),
+            const SizedBox(height: 10),
+            InkWell(
+              onTap: () => pickDate(),
+              child: Ink(
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                        color: Theme.of(context).primaryColor, width: 2),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_month,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        '${_date.day}/${_date.month}/${_date.year}',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 10),
             BlocBuilder<CartCubit, CartState>(
@@ -150,16 +179,32 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     );
   }
 
+  Future pickDate() async {
+    final newDate = await showDatePicker(
+        context: context,
+        initialDate: _date,
+        firstDate: DateTime(DateTime.now().year - 5),
+        lastDate: DateTime(DateTime.now().year + 5));
+
+    print("date $_date");
+    if (newDate == null) return;
+    setState(() {
+      _date = newDate;
+    });
+    print("date $_date");
+  }
+
   void _addTransaction() {
     di
         .sl<TransactionCubit>()
         .createTransaction(
-          transaction: TransactionEntity(
-              items: _carts,
-              note: _noteController.text,
-              total: double.tryParse(_totalController.text),
-              type: _selectedType),
-        )
+            transaction: TransactionEntity(
+          items: _carts,
+          note: _noteController.text,
+          total: double.tryParse(_totalController.text),
+          type: _selectedType,
+          createdAt: Timestamp.fromDate(_date),
+        ))
         .then((_) {
       context.read<TransactionCubit>().getTransactions();
       Navigator.pop(context);

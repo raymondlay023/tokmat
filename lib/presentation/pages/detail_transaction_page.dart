@@ -7,6 +7,8 @@ import 'package:tokmat/core/utils.dart';
 import 'package:tokmat/domain/entities/transaction_entity.dart';
 import 'package:tokmat/presentation/cubit/shop_cubit.dart';
 
+import '../../core/theme.dart';
+
 class DetailTransactionPage extends StatelessWidget {
   final TransactionEntity transaction;
   const DetailTransactionPage({super.key, required this.transaction});
@@ -54,14 +56,14 @@ class DetailTransactionPage extends StatelessWidget {
                     Column(
                       children: [
                         Text(
-                          "${isSuccess ? shopState.shop.name : 'Nama Toko'}",
+                          "${isSuccess ? shopState.shop.name : 'Belum ada nama toko'}",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
                         Text(
-                          '${isSuccess ? shopState.shop.phoneNumber : 'Nama Toko'}',
+                          '${isSuccess ? shopState.shop.phoneNumber : 'Belum ada nomor hp'}',
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black.withOpacity(0.5),
@@ -75,6 +77,12 @@ class DetailTransactionPage extends StatelessWidget {
               const SizedBox(height: 30),
               Text(DateFormat('EEEE, MMM d, yyyy')
                   .format(transaction.createdAt!.toDate())),
+              const SizedBox(height: 10),
+              Text("Tipe : ${transaction.type}",
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                      color: transaction.type == TypeConst.pengeluaran
+                          ? pengeluaranColor
+                          : pemasukanColor)),
               const SizedBox(height: 10),
               const DottedLine(),
               const SizedBox(height: 15),
@@ -131,12 +139,12 @@ class DetailTransactionPage extends StatelessWidget {
                                 children: [
                                   Text('${item.product.name}'),
                                   Text(
-                                    '${formatPrice(item.product.price)} / item',
+                                    '${formatCurrency(item.product.price)} / item',
                                     style: const TextStyle(
                                       color: Colors.black38,
                                     ),
                                   ),
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                 ],
                               ))
                           .toList(),
@@ -149,7 +157,7 @@ class DetailTransactionPage extends StatelessWidget {
                           .map((item) => Column(
                                 children: [
                                   Text("${item.quantity}"),
-                                  SizedBox(height: 25),
+                                  const SizedBox(height: 25),
                                 ],
                               ))
                           .toList(),
@@ -161,9 +169,9 @@ class DetailTransactionPage extends StatelessWidget {
                       children: transaction.items!
                           .map((item) => Column(
                                 children: [
-                                  Text(
-                                      'Rp. ${item.product.price! * item.quantity}'),
-                                  SizedBox(height: 25),
+                                  Text(formatCurrency(
+                                      item.product.price! * item.quantity)),
+                                  const SizedBox(height: 25),
                                 ],
                               ))
                           .toList(),
@@ -194,7 +202,7 @@ class DetailTransactionPage extends StatelessWidget {
                   Expanded(
                     flex: 1,
                     child: Text(
-                      formatPrice(transaction.total!),
+                      formatCurrency(transaction.total!),
                       style: TextStyle(fontSize: 15),
                       textAlign: TextAlign.center,
                     ),

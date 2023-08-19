@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokmat/core/const.dart';
 import 'package:tokmat/core/utils.dart';
 import 'package:tokmat/domain/entities/product_entity.dart';
-import 'package:tokmat/presentation/pages/widgets/my_search_delegate.dart';
-import 'package:tokmat/injection_container.dart' as di;
+import 'package:tokmat/presentation/pages/widgets/custom_search_delegate.dart';
 
 import '../cubit/product_cubit.dart';
 import 'widgets/product_tile_widget.dart';
@@ -65,15 +64,15 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Widget get noProductsYetPage {
-    return Center(
+    return const Center(
         child: Text(
       'No products yet!',
-      style: Theme.of(context).textTheme.displayLarge,
+      style: TextStyle(fontSize: 30),
     ));
   }
 }
 
-class ProductSearchDelegate extends MySearchDelegate<ProductEntity> {
+class ProductSearchDelegate extends CustomSearchDelegate<ProductEntity> {
   ProductSearchDelegate({required List<ProductEntity> products})
       : super(
           items: products,

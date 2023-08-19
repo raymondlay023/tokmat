@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tokmat/domain/entities/shop_entity.dart';
 
 class ShopModel extends ShopEntity {
-  ShopModel({
+  const ShopModel({
     final String? id,
     final String? userId,
     final String? name,
